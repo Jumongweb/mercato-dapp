@@ -22,6 +22,7 @@ import {
   DollarSign,
 } from 'lucide-react'
 import { getCountryLabel, getSectorLabel } from '@/lib/constants'
+import { getServerDictionary, getServerLocale, tr, formatMoneyServer } from '@/lib/i18n/server'
 
 type ProductRow = {
   id: string
@@ -42,20 +43,19 @@ type DealRow = {
   created_at: string | null
 }
 
-const DEAL_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  seeking_funding: { label: 'Open for funding', className: 'bg-accent/10 text-accent' },
-  funded: { label: 'Funded', className: 'bg-success/10 text-success' },
-  in_progress: { label: 'In progress', className: 'bg-primary/10 text-primary' },
-  completed: { label: 'Completed', className: 'bg-muted text-muted-foreground' },
-  cancelled: { label: 'Cancelled', className: 'bg-muted text-muted-foreground' },
+const DEAL_STATUS_CLASS: Record<string, string> = {
+  seeking_funding: 'bg-accent/10 text-accent',
+  funded: 'bg-success/10 text-success',
+  in_progress: 'bg-primary/10 text-primary',
+  completed: 'bg-muted text-muted-foreground',
+  cancelled: 'bg-muted text-muted-foreground',
 }
 
-const formatPrice = (value: number) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value)
+function dealStatusLabel(m: Awaited<ReturnType<typeof getServerDictionary>>, status: string): string {
+  const label = tr(m, `deals.${status}`)
+  if (label === `deals.${status}`) return status
+  return label
+}
 
 export default async function SupplierDetailPage({
   params,
@@ -64,6 +64,8 @@ export default async function SupplierDetailPage({
 }) {
   const { id } = await params
   const supabase = await createClient()
+  const m = await getServerDictionary()
+  const locale = await getServerLocale()
 
   const { data: company, error: companyError } = await supabase
     .from('supplier_companies')
@@ -96,7 +98,10 @@ export default async function SupplierDetailPage({
   const dealsList = (recentDeals ?? []) as DealRow[]
   const totalDeals = dealsCount ?? 0
   const profile = { ...company, email: ownerProfile?.email ?? null }
-  const displayName = company.company_name || company.full_name || company.contact_name || 'Supplier'
+  const displayName =
+    company.company_name || company.full_name || company.contact_name || tr(m, 'supplierDetail.fallbackSupplier')
+
+  const formatPrice = (value: number) => formatMoneyServer(locale, value)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -106,7 +111,7 @@ export default async function SupplierDetailPage({
         <div className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Link href="/suppliers" className="flex items-center gap-1 hover:text-foreground">
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Suppliers
+            {tr(m, 'supplierDetail.backToDirectory')}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 opacity-40" aria-hidden />
           <span className="truncate text-foreground/70">{displayName}</span>
@@ -124,7 +129,7 @@ export default async function SupplierDetailPage({
                   {profile.verified && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success ring-1 ring-success/20">
                       <CheckCircle2 className="h-3 w-3" aria-hidden />
-                      Verified
+                      {tr(m, 'supplierDetail.verified')}
                     </span>
                   )}
                   {profile.sector && (
@@ -146,7 +151,7 @@ export default async function SupplierDetailPage({
 
             <Button asChild>
               <Link href={`/create-deal?supplierId=${id}`}>
-                Create deal
+                {tr(m, 'supplierDetail.createDeal')}
                 <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>
             </Button>
@@ -161,21 +166,21 @@ export default async function SupplierDetailPage({
         <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center">
             <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Products
+              {tr(m, 'supplierDetail.statProducts')}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums">{productList.length}</p>
-            <p className="text-[11px] text-muted-foreground">in catalog</p>
+            <p className="text-[11px] text-muted-foreground">{tr(m, 'supplierDetail.statInCatalog')}</p>
           </div>
           <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center">
             <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Deals
+              {tr(m, 'supplierDetail.statDeals')}
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums">{totalDeals}</p>
-            <p className="text-[11px] text-muted-foreground">on MERCATO</p>
+            <p className="text-[11px] text-muted-foreground">{tr(m, 'supplierDetail.statOnMercato')}</p>
           </div>
           <div className="col-span-2 rounded-xl border border-border bg-muted/30 px-4 py-3 sm:col-span-1">
             <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              Categories
+              {tr(m, 'supplierDetail.statCategories')}
             </p>
             {profile.categories?.length ? (
               <div className="mt-1.5 flex flex-wrap gap-1">
@@ -191,7 +196,7 @@ export default async function SupplierDetailPage({
                 )}
               </div>
             ) : (
-              <p className="mt-1 text-sm text-muted-foreground">No categories</p>
+              <p className="mt-1 text-sm text-muted-foreground">{tr(m, 'supplierDetail.noCategories')}</p>
             )}
           </div>
         </div>
@@ -203,11 +208,9 @@ export default async function SupplierDetailPage({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5 shrink-0" aria-hidden />
-                  Products &amp; prices
+                  {tr(m, 'supplierDetail.productsTitle')}
                 </CardTitle>
-                <CardDescription>
-                  Catalog of products offered with unit prices and ordering details
-                </CardDescription>
+                <CardDescription>{tr(m, 'supplierDetail.productsDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 {productList.length === 0 ? (
@@ -215,7 +218,7 @@ export default async function SupplierDetailPage({
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                       <Package className="h-5 w-5 text-muted-foreground" aria-hidden />
                     </div>
-                    <p className="text-sm text-muted-foreground">No products in catalog yet</p>
+                    <p className="text-sm text-muted-foreground">{tr(m, 'supplierDetail.emptyCatalog')}</p>
                   </div>
                 ) : (
                   <ul className="space-y-2">
@@ -241,7 +244,7 @@ export default async function SupplierDetailPage({
                               {p.minimum_order != null && (
                                 <span className="flex items-center gap-1 tabular-nums">
                                   <DollarSign className="h-3 w-3" aria-hidden />
-                                  Min. {formatPrice(p.minimum_order)}
+                                  {tr(m, 'supplierDetail.minOrder', { amount: formatPrice(p.minimum_order) })}
                                 </span>
                               )}
                               {p.delivery_time && (
@@ -255,7 +258,7 @@ export default async function SupplierDetailPage({
                         </div>
                         <div className="shrink-0 text-right">
                           <p className="font-bold tabular-nums">{formatPrice(p.price_per_unit)}</p>
-                          <p className="text-xs text-muted-foreground">per unit</p>
+                          <p className="text-xs text-muted-foreground">{tr(m, 'supplierDetail.perUnit')}</p>
                         </div>
                       </li>
                     ))}
@@ -270,7 +273,7 @@ export default async function SupplierDetailPage({
             {/* Contact */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Contact</CardTitle>
+                <CardTitle className="text-base">{tr(m, 'supplierDetail.contactTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {profile.email && (
@@ -294,7 +297,7 @@ export default async function SupplierDetailPage({
                   </div>
                 )}
                 {!profile.email && !profile.phone && !profile.address && (
-                  <p className="text-sm text-muted-foreground">No contact details available</p>
+                  <p className="text-sm text-muted-foreground">{tr(m, 'supplierDetail.noContact')}</p>
                 )}
               </CardContent>
             </Card>
@@ -304,20 +307,20 @@ export default async function SupplierDetailPage({
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <TrendingUp className="h-4 w-4" aria-hidden />
-                  Recent deals
+                  {tr(m, 'supplierDetail.recentDealsTitle')}
                 </CardTitle>
-                <CardDescription>Deals where this supplier is involved</CardDescription>
+                <CardDescription>{tr(m, 'supplierDetail.recentDealsDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 {dealsList.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-muted-foreground">No deals yet</p>
+                  <p className="py-4 text-center text-sm text-muted-foreground">
+                    {tr(m, 'supplierDetail.noDealsYet')}
+                  </p>
                 ) : (
                   <div className="space-y-2">
                     {dealsList.map((d) => {
-                      const cfg = DEAL_STATUS_CONFIG[d.status] ?? {
-                        label: d.status,
-                        className: 'bg-muted text-muted-foreground',
-                      }
+                      const className = DEAL_STATUS_CLASS[d.status] ?? 'bg-muted text-muted-foreground'
+                      const label = dealStatusLabel(m, d.status)
                       return (
                         <Link
                           key={d.id}
@@ -325,16 +328,14 @@ export default async function SupplierDetailPage({
                           className="group flex items-center justify-between gap-2 rounded-xl border border-border px-3 py-2.5 transition-colors hover:bg-muted/50"
                         >
                           <span className="min-w-0 flex-1 truncate text-sm font-medium group-hover:text-accent">
-                            {d.product_name || d.title || 'Deal'}
+                            {d.product_name || d.title || tr(m, 'adminPage.fallbackDeal')}
                           </span>
                           <div className="flex shrink-0 items-center gap-2">
                             <span className="tabular-nums text-xs text-muted-foreground">
                               ${Number(d.amount).toLocaleString()}
                             </span>
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${cfg.className}`}
-                            >
-                              {cfg.label}
+                            <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${className}`}>
+                              {label}
                             </span>
                           </div>
                         </Link>
@@ -342,7 +343,10 @@ export default async function SupplierDetailPage({
                     })}
                     {totalDeals > 5 && (
                       <p className="pt-1 text-center text-xs text-muted-foreground">
-                        +{totalDeals - 5} more deal{totalDeals - 5 !== 1 ? 's' : ''} on platform
+                        {tr(m, 'supplierDetail.moreDealsOnPlatform', {
+                          count: totalDeals - 5,
+                          dealsWord: locale === 'es' ? (totalDeals - 5 === 1 ? 'orden' : 'órdenes') : totalDeals - 5 === 1 ? 'deal' : 'deals',
+                        })}
                       </p>
                     )}
                   </div>

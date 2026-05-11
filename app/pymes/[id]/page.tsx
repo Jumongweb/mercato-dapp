@@ -22,6 +22,7 @@ import { getCountryLabel, getSectorLabel } from '@/lib/constants'
 import { getReputation } from '@/lib/reputation'
 import { formatCurrency } from '@/lib/format'
 import { ReputationSummaryCard } from '@/components/reputation-summary-card'
+import { getServerDictionary, tr } from '@/lib/i18n/server'
 
 type DealRow = {
   id: string
@@ -32,18 +33,11 @@ type DealRow = {
   created_at: string | null
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  seeking_funding: 'Open for funding',
-  funded: 'Funded',
-  in_progress: 'In progress',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-}
-
 const STATUS_BADGE_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   completed: 'default',
   funded: 'secondary',
   in_progress: 'secondary',
+  milestone_pending: 'secondary',
   seeking_funding: 'outline',
   cancelled: 'destructive',
 }
@@ -56,6 +50,12 @@ function getInitials(name: string): string {
     .join('') || '?'
 }
 
+function dealStatusLabel(m: Awaited<ReturnType<typeof getServerDictionary>>, status: string): string {
+  const label = tr(m, `deals.${status}`)
+  if (label === `deals.${status}`) return status
+  return label
+}
+
 export default async function SmbDetailPage({
   params,
 }: {
@@ -63,6 +63,7 @@ export default async function SmbDetailPage({
 }) {
   const { id } = await params
   const supabase = await createClient()
+  const m = await getServerDictionary()
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -101,8 +102,10 @@ export default async function SmbDetailPage({
   const completionRate =
     fundedDeals.length > 0 ? Math.round((completedDeals / fundedDeals.length) * 100) : null
 
+  const stakeAmount = Math.max(0, Number(profile.stake_amount ?? 0) || 0)
+
   const displayName =
-    profile.company_name || profile.full_name || profile.contact_name || 'SMB'
+    profile.company_name || profile.full_name || profile.contact_name || tr(m, 'smbDetail.fallbackSmb')
 
   const initials = getInitials(displayName)
 
@@ -116,7 +119,7 @@ export default async function SmbDetailPage({
           <Button variant="ghost" size="sm" asChild>
             <Link href="/pymes">
               <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
-              Back to SMBs
+              {tr(m, 'smbDetail.backToDirectory')}
             </Link>
           </Button>
         </div>
@@ -133,7 +136,7 @@ export default async function SmbDetailPage({
                 {profile.verified && (
                   <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 gap-1">
                     <CheckCircle2 className="h-3 w-3" />
-                    Verified
+                    {tr(m, 'smbDetail.verified')}
                   </Badge>
                 )}
               </div>
@@ -163,7 +166,7 @@ export default async function SmbDetailPage({
             </div>
             {reputation?.trustLabel && (
               <div className="shrink-0 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-center text-primary">
-                <p className="mb-0.5 text-xs font-medium opacity-70">Reputation</p>
+                <p className="mb-0.5 text-xs font-medium opacity-70">{tr(m, 'smbDetail.reputationLabel')}</p>
                 <p className="text-sm font-semibold capitalize">
                   {reputation.trustLabel.replaceAll('_', ' ')}
                 </p>
@@ -178,7 +181,7 @@ export default async function SmbDetailPage({
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
                 <BarChart3 className="h-3.5 w-3.5" />
-                Deals on MERCATO
+                {tr(m, 'smbDetail.statDealsMercato')}
               </CardDescription>
               <CardTitle className="text-3xl tabular-nums">{totalDeals}</CardTitle>
             </CardHeader>
@@ -187,7 +190,7 @@ export default async function SmbDetailPage({
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
                 <Activity className="h-3.5 w-3.5" />
-                Active deals
+                {tr(m, 'smbDetail.statActiveDeals')}
               </CardDescription>
               <CardTitle className="text-3xl tabular-nums">{activeDeals}</CardTitle>
             </CardHeader>
@@ -196,7 +199,7 @@ export default async function SmbDetailPage({
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5" />
-                Total repaid
+                {tr(m, 'smbDetail.statTotalRepaid')}
               </CardDescription>
               <CardTitle className="text-2xl tabular-nums text-emerald-600 dark:text-emerald-400">
                 {formatCurrency(totalRepaid)}
@@ -207,7 +210,7 @@ export default async function SmbDetailPage({
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
                 <TrendingUp className="h-3.5 w-3.5" />
-                Completion rate
+                {tr(m, 'smbDetail.statCompletionRate')}
               </CardDescription>
               <CardTitle className="text-3xl tabular-nums">
                 {completionRate != null ? `${completionRate}%` : '-'}
@@ -218,10 +221,10 @@ export default async function SmbDetailPage({
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-1.5">
                 <Wallet className="h-3.5 w-3.5" />
-                Trust stake
+                {tr(m, 'smbDetail.statTrustStake')}
               </CardDescription>
               <CardTitle className="text-2xl tabular-nums text-primary">
-                {stakeAmount > 0 ? formatPrice(stakeAmount) : '—'}
+                {stakeAmount > 0 ? formatCurrency(stakeAmount) : '—'}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -233,7 +236,7 @@ export default async function SmbDetailPage({
           {/* Contact & details */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base">Contact &amp; details</CardTitle>
+              <CardTitle className="text-base">{tr(m, 'smbDetail.contactDetailsTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {profile.email && (
@@ -260,7 +263,7 @@ export default async function SmbDetailPage({
                 </div>
               )}
               {!profile.email && !profile.phone && !profile.address && (
-                <p className="text-sm text-muted-foreground">No contact details available.</p>
+                <p className="text-sm text-muted-foreground">{tr(m, 'smbDetail.noContact')}</p>
               )}
             </CardContent>
           </Card>
@@ -270,16 +273,14 @@ export default async function SmbDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TrendingUp className="h-4 w-4" aria-hidden />
-                Deals
+                {tr(m, 'smbDetail.dealsTitle')}
               </CardTitle>
-              <CardDescription>
-                Supply-chain financing deals created by this SMB
-              </CardDescription>
+              <CardDescription>{tr(m, 'smbDetail.dealsDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               {dealsList.length === 0 ? (
                 <div className="py-10 text-center">
-                  <p className="text-sm text-muted-foreground">No deals yet</p>
+                  <p className="text-sm text-muted-foreground">{tr(m, 'smbDetail.noDealsYet')}</p>
                 </div>
               ) : (
                 <ul className="space-y-2">
@@ -290,14 +291,14 @@ export default async function SmbDetailPage({
                         className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm transition-colors hover:bg-muted/50"
                       >
                         <span className="font-medium">
-                          {d.product_name || d.title || 'Deal'}
+                          {d.product_name || d.title || tr(m, 'smbDetail.dealFallback')}
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="tabular-nums text-muted-foreground">
                             {formatCurrency(d.amount)}
                           </span>
                           <Badge variant={STATUS_BADGE_VARIANT[d.status] ?? 'outline'} className="text-xs">
-                            {STATUS_LABELS[d.status] ?? d.status}
+                            {dealStatusLabel(m, d.status)}
                           </Badge>
                           <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                         </div>
@@ -308,7 +309,7 @@ export default async function SmbDetailPage({
               )}
               {totalDeals > 10 && (
                 <p className="mt-4 text-center text-xs text-muted-foreground">
-                  Showing latest 10 of {totalDeals} deals
+                  {tr(m, 'smbDetail.showingLatest', { total: totalDeals })}
                 </p>
               )}
             </CardContent>

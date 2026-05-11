@@ -9,6 +9,7 @@ import { PendingApprovals } from './pending-approvals'
 import { ReleaseFundsFallback } from './release-funds-fallback'
 import { AdminEscrowsProvider } from './admin-escrows-provider'
 import { AdminDefindexVaultPanel } from '@/components/admin/admin-defindex-vault-panel'
+import { getServerDictionary, tr } from '@/lib/i18n/server'
 
 /** Milestone awaiting approval + release (in_progress) */
 export interface PendingApprovalItem {
@@ -50,6 +51,7 @@ export default async function AdminDashboardPage({
   searchParams?: AdminSearchParams
 }) {
   const supabase = await createClient()
+  const m = await getServerDictionary()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
@@ -122,26 +124,26 @@ export default async function AdminDashboardPage({
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard">
                 <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
-                Dashboard
+                {tr(m, 'adminPage.backDashboard')}
               </Link>
             </Button>
           </div>
-          <h1 className="mb-2 text-3xl font-bold">Milestone approvals</h1>
-          <p className="mb-6 text-muted-foreground">Approve milestones to release funds from escrow on-chain.</p>
+          <h1 className="mb-2 text-3xl font-bold">{tr(m, 'adminPage.title')}</h1>
+          <p className="mb-6 text-muted-foreground">{tr(m, 'adminPage.subtitleEmpty')}</p>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5" aria-hidden />
-                Pending approvals
+                {tr(m, 'adminPage.pendingTitle')}
               </CardTitle>
               <CardDescription>
-                No deals with escrow yet. When suppliers accept orders or upload delivery proof, milestones will appear here.
+                {tr(m, 'adminPage.pendingEmptyDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">There are no pending milestone approvals.</p>
+              <p className="text-sm text-muted-foreground">{tr(m, 'adminPage.noPending')}</p>
               <Button asChild variant="outline" className="mt-4">
-                <Link href="/dashboard">Back to dashboard</Link>
+                <Link href="/dashboard">{tr(m, 'adminPage.backToDashboard')}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -186,48 +188,48 @@ export default async function AdminDashboardPage({
   const inProgressMilestones = (allMilestones ?? []).filter((m) => m.status === 'in_progress')
   const completedMilestones = (allMilestones ?? []).filter((m) => m.status === 'completed')
 
-  const items: PendingApprovalItem[] = inProgressMilestones.map((m) => {
-    const deal = dealsById.get(m.deal_id) as DealRow | undefined
-    const ordered = milestonesByDeal.get(m.deal_id) ?? []
-    const milestoneIndex = ordered.findIndex((x) => x.id === m.id)
+  const items: PendingApprovalItem[] = inProgressMilestones.map((row) => {
+    const deal = dealsById.get(row.deal_id) as DealRow | undefined
+    const ordered = milestonesByDeal.get(row.deal_id) ?? []
+    const milestoneIndex = ordered.findIndex((x) => x.id === row.id)
     const pymeName =
       deal?.pyme?.company_name || deal?.pyme?.full_name || deal?.pyme?.contact_name || '—'
     const supplierName =
       deal?.supplier?.company_name || deal?.supplier?.full_name || deal?.supplier?.contact_name || '—'
     return {
-      dealId: m.deal_id,
-      dealTitle: deal?.title ?? 'Deal',
+      dealId: row.deal_id,
+      dealTitle: deal?.title ?? tr(m, 'adminPage.fallbackDeal'),
       dealProductName: deal?.product_name ?? null,
       dealAmount: Number(deal?.amount ?? 0),
       escrowContractAddress: deal?.escrow_contract_address ?? '',
-      milestoneId: m.id,
-      milestoneTitle: m.title,
+      milestoneId: row.id,
+      milestoneTitle: row.title,
       milestoneIndex: milestoneIndex >= 0 ? milestoneIndex : 0,
-      milestonePercentage: Number(m.percentage ?? 0),
-      milestoneAmount: Number(m.amount ?? 0),
-      proofNotes: m.proof_notes ?? null,
-      proofDocumentUrl: m.proof_document_url ?? null,
+      milestonePercentage: Number(row.percentage ?? 0),
+      milestoneAmount: Number(row.amount ?? 0),
+      proofNotes: row.proof_notes ?? null,
+      proofDocumentUrl: row.proof_document_url ?? null,
       pymeName,
       supplierName,
     }
   })
   items.sort(sortByDealDate)
 
-  const releaseFallbackItems: ReleaseFallbackItem[] = completedMilestones.map((m) => {
-    const deal = dealsById.get(m.deal_id) as DealRow | undefined
-    const ordered = milestonesByDeal.get(m.deal_id) ?? []
-    const milestoneIndex = ordered.findIndex((x) => x.id === m.id)
+  const releaseFallbackItems: ReleaseFallbackItem[] = completedMilestones.map((row) => {
+    const deal = dealsById.get(row.deal_id) as DealRow | undefined
+    const ordered = milestonesByDeal.get(row.deal_id) ?? []
+    const milestoneIndex = ordered.findIndex((x) => x.id === row.id)
     return {
-      dealId: m.deal_id,
-      dealTitle: deal?.title ?? 'Deal',
+      dealId: row.deal_id,
+      dealTitle: deal?.title ?? tr(m, 'adminPage.fallbackDeal'),
       dealProductName: deal?.product_name ?? null,
       escrowContractAddress: deal?.escrow_contract_address ?? '',
-      milestoneId: m.id,
-      milestoneTitle: m.title,
+      milestoneId: row.id,
+      milestoneTitle: row.title,
       milestoneIndex: milestoneIndex >= 0 ? milestoneIndex : 0,
-      milestoneAmount: Number(m.amount ?? 0),
-      milestonePercentage: Number(m.percentage ?? 0),
-      completedAt: m.completed_at ?? null,
+      milestoneAmount: Number(row.amount ?? 0),
+      milestonePercentage: Number(row.percentage ?? 0),
+      completedAt: row.completed_at ?? null,
     }
   })
   releaseFallbackItems.sort(sortByDealDate)
@@ -240,7 +242,7 @@ export default async function AdminDashboardPage({
           d.pyme_id,
           {
             id: d.pyme_id,
-            name: d.pyme?.company_name || d.pyme?.full_name || d.pyme?.contact_name || 'PyME',
+            name: d.pyme?.company_name || d.pyme?.full_name || d.pyme?.contact_name || tr(m, 'adminPage.fallbackPyme'),
           },
         ])
     ).values()
@@ -257,7 +259,7 @@ export default async function AdminDashboardPage({
               d.supplier?.company_name ||
               d.supplier?.full_name ||
               d.supplier?.contact_name ||
-              'Supplier',
+              tr(m, 'adminPage.fallbackSupplier'),
           },
         ])
     ).values()
@@ -272,43 +274,43 @@ export default async function AdminDashboardPage({
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard">
                 <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
-                Dashboard
+                {tr(m, 'adminPage.backDashboard')}
               </Link>
             </Button>
-            <h1 className="mt-2 text-3xl font-bold">Milestone approvals</h1>
+            <h1 className="mt-2 text-3xl font-bold">{tr(m, 'adminPage.title')}</h1>
             <p className="mt-1 text-muted-foreground">
-              Approve milestones to release funds from escrow. Connect your admin wallet to sign on-chain.
+              {tr(m, 'adminPage.subtitle')}
             </p>
           </div>
         </div>
 
         <div className="mb-6 flex flex-wrap items-center gap-4">
-          <span className="text-sm text-muted-foreground">Sort:</span>
+          <span className="text-sm text-muted-foreground">{tr(m, 'adminPage.sortLabel')}</span>
           <div className="flex gap-2">
             <Button asChild variant={sortOrder === 'newest' ? 'default' : 'outline'} size="sm">
               <Link
                 href={`/dashboard/admin${companyFilter ? `?company=${companyFilter}&sort=newest` : '?sort=newest'}`}
               >
-                Newest first
+                {tr(m, 'adminPage.newestFirst')}
               </Link>
             </Button>
             <Button asChild variant={sortOrder === 'oldest' ? 'default' : 'outline'} size="sm">
               <Link
                 href={`/dashboard/admin${companyFilter ? `?company=${companyFilter}&sort=oldest` : '?sort=oldest'}`}
               >
-                Oldest first
+                {tr(m, 'adminPage.oldestFirst')}
               </Link>
             </Button>
           </div>
           {(uniquePymes.length > 0 || uniqueSuppliers.length > 0) && (
             <>
-              <span className="text-sm text-muted-foreground">Filter by company:</span>
+              <span className="text-sm text-muted-foreground">{tr(m, 'adminPage.filterCompany')}</span>
               <div className="flex flex-wrap gap-2">
                 <Button asChild variant={!companyFilter ? 'default' : 'outline'} size="sm">
                   <Link
                     href={`/dashboard/admin${sortOrder !== 'newest' ? `?sort=${sortOrder}` : ''}`}
                   >
-                    All
+                    {tr(m, 'adminPage.filterAll')}
                   </Link>
                 </Button>
                 {uniquePymes.map((p) => (
@@ -321,7 +323,7 @@ export default async function AdminDashboardPage({
                     <Link
                       href={`/dashboard/admin?company=pyme:${p.id}${sortOrder !== 'newest' ? `&sort=${sortOrder}` : ''}`}
                     >
-                      PyME: {p.name}
+                      {tr(m, 'adminPage.filterPymePrefix')} {p.name}
                     </Link>
                   </Button>
                 ))}
@@ -335,7 +337,7 @@ export default async function AdminDashboardPage({
                     <Link
                       href={`/dashboard/admin?company=supplier:${s.id}${sortOrder !== 'newest' ? `&sort=${sortOrder}` : ''}`}
                     >
-                      Supplier: {s.name}
+                      {tr(m, 'adminPage.filterSupplierPrefix')} {s.name}
                     </Link>
                   </Button>
                 ))}
@@ -351,7 +353,10 @@ export default async function AdminDashboardPage({
               <div>
                 <p className="text-2xl font-bold tabular-nums">{items.length}</p>
                 <p className="text-sm text-muted-foreground">
-                  milestone{items.length !== 1 ? 's' : ''} awaiting release
+                  {tr(m, 'adminPage.awaitingRelease', {
+                    count: items.length,
+                    plural: items.length !== 1 ? 's' : '',
+                  })}
                 </p>
               </div>
             </CardContent>

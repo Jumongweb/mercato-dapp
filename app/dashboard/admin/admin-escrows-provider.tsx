@@ -8,6 +8,7 @@ import { ShieldCheck, FileCheck } from 'lucide-react'
 import { PendingApprovals } from './pending-approvals'
 import { ReleaseFundsFallback } from './release-funds-fallback'
 import type { PendingApprovalItem, ReleaseFallbackItem } from './page'
+import { useI18n } from '@/lib/i18n/provider'
 
 interface AdminEscrowsProviderProps {
   items: PendingApprovalItem[]
@@ -19,6 +20,7 @@ interface AdminEscrowsProviderProps {
  * and passes to children to avoid duplicate getEscrowByContractIds calls.
  */
 export function AdminEscrowsProvider({ items, releaseFallbackItems }: AdminEscrowsProviderProps) {
+  const { t } = useI18n()
   const { getEscrowByContractIds } = useGetEscrowFromIndexerByContractIds()
   const getEscrowRef = useRef(getEscrowByContractIds)
   getEscrowRef.current = getEscrowByContractIds
@@ -71,11 +73,10 @@ export function AdminEscrowsProvider({ items, releaseFallbackItems }: AdminEscro
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5" aria-hidden />
-            Pending approvals
+            {t('adminEscrows.pendingCardTitle')}
           </CardTitle>
           <CardDescription>
-            First 50%: supplier accepted — use Approve then Release. Second 50%: PyME confirmed delivery — use Release
-            only (approval already done by PyME).
+            {t('adminEscrows.pendingCardDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,11 +88,10 @@ export function AdminEscrowsProvider({ items, releaseFallbackItems }: AdminEscro
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileCheck className="h-5 w-5" aria-hidden />
-            Release funds (fallback)
+            {t('adminEscrows.fallbackCardTitle')}
           </CardTitle>
           <CardDescription>
-            Milestones marked completed in DB. Use Approve if not yet approved on-chain; use Release to send funds.
-            PyME-confirmed milestones are already approved — use Release only.
+            {t('adminEscrows.fallbackCardDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>

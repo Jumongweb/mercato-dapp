@@ -64,15 +64,9 @@ import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/format'
 import { PRODUCT_CATEGORIES, getCategoryLabel } from '@/lib/categories'
 import { LATAM_COUNTRIES, SECTORS } from '@/lib/constants'
+import { useI18n } from '@/lib/i18n/provider'
 
 const PAGE_SIZE = 20
-const SORT_OPTIONS = [
-  { value: 'name_asc', label: 'Name A–Z' },
-  { value: 'name_desc', label: 'Name Z–A' },
-  { value: 'category_asc', label: 'Category' },
-  { value: 'price_asc', label: 'Price (low to high)' },
-  { value: 'price_desc', label: 'Price (high to low)' },
-] as const
 
 interface SupplierProduct {
   id: string
@@ -98,6 +92,18 @@ type SupplierCompany = {
 export default function SupplierProfilePage() {
   const router = useRouter()
   const supabase = createClient()
+  const { t } = useI18n()
+  const sortOptions = useMemo(
+    () =>
+      [
+        { value: 'name_asc', label: t('supplierProfile.sortNameAz') },
+        { value: 'name_desc', label: t('supplierProfile.sortNameZa') },
+        { value: 'category_asc', label: t('supplierProfile.sortCategory') },
+        { value: 'price_asc', label: t('supplierProfile.sortPriceLow') },
+        { value: 'price_desc', label: t('supplierProfile.sortPriceHigh') },
+      ] as const,
+    [t],
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [isSavingBio, setIsSavingBio] = useState(false)
   const [user, setUser] = useState<{ id: string } | null>(null)
@@ -262,10 +268,10 @@ export default function SupplierProfilePage() {
             : c
         )
       )
-      toast.success('Company details saved.')
+      toast.success(t('supplierProfile.toastDetailsSaved'))
     } catch (err) {
       console.error(err)
-      toast.error('Failed to save bio.')
+      toast.error(t('supplierProfile.toastSaveBioFail'))
     } finally {
       setIsSavingBio(false)
     }
@@ -305,7 +311,7 @@ export default function SupplierProfilePage() {
     const category = formProduct.category.trim().toLowerCase()
     const price = Number.parseFloat(formProduct.price_per_unit)
     if (!name || !category || Number.isNaN(price) || price <= 0) {
-      toast.error('Enter product name, category, and a valid price.')
+      toast.error(t('supplierProfile.toastProductFields'))
       return
     }
     setFormSaving(true)
@@ -315,7 +321,7 @@ export default function SupplierProfilePage() {
         : null
       const deliveryTime = formProduct.delivery_time.trim() || null
       if (!selectedCompanyId) {
-        toast.error('Select a company first.')
+        toast.error(t('supplierProfile.toastSelectCompany'))
         setFormSaving(false)
         return
       }
@@ -343,10 +349,10 @@ export default function SupplierProfilePage() {
         minimum_order: '',
         delivery_time: '',
       })
-      toast.success('Product added.')
+      toast.success(t('supplierProfile.toastProductAdded'))
     } catch (err) {
       console.error(err)
-      toast.error('Failed to add product.')
+      toast.error(t('supplierProfile.toastProductAddFail'))
     } finally {
       setFormSaving(false)
     }
@@ -359,7 +365,7 @@ export default function SupplierProfilePage() {
     const category = formProduct.category.trim().toLowerCase()
     const price = Number.parseFloat(formProduct.price_per_unit)
     if (!name || !category || Number.isNaN(price) || price <= 0) {
-      toast.error('Enter product name, category, and a valid price.')
+      toast.error(t('supplierProfile.toastProductFields'))
       return
     }
     setFormSaving(true)
@@ -405,10 +411,10 @@ export default function SupplierProfilePage() {
         minimum_order: '',
         delivery_time: '',
       })
-      toast.success('Product updated.')
+      toast.success(t('supplierProfile.toastProductUpdated'))
     } catch (err) {
       console.error(err)
-      toast.error('Failed to update product.')
+      toast.error(t('supplierProfile.toastProductUpdateFail'))
     } finally {
       setFormSaving(false)
     }
@@ -424,10 +430,10 @@ export default function SupplierProfilePage() {
       if (error) throw error
       setProducts((prev) => prev.filter((p) => p.id !== deleteProduct.id))
       setDeleteProduct(null)
-      toast.success('Product removed.')
+      toast.success(t('supplierProfile.toastProductRemoved'))
     } catch (err) {
       console.error(err)
-      toast.error('Failed to remove product.')
+      toast.error(t('supplierProfile.toastProductRemoveFail'))
     }
   }
 
@@ -446,23 +452,23 @@ export default function SupplierProfilePage() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="form-name">Product name</Label>
+          <Label htmlFor="form-name">{t('supplierProfile.formProductName')}</Label>
           <Input
             id="form-name"
             value={formProduct.name}
             onChange={(e) => setFormProduct((prev) => ({ ...prev, name: e.target.value }))}
-            placeholder="e.g., Organic Flour 25kg"
+            placeholder={t('supplierProfile.formProductNamePh')}
             autoComplete="off"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="form-category">Category</Label>
+          <Label htmlFor="form-category">{t('supplierProfile.formCategory')}</Label>
           <Select
             value={formProduct.category || undefined}
             onValueChange={(v) => setFormProduct((prev) => ({ ...prev, category: v }))}
           >
             <SelectTrigger id="form-category">
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder={t('supplierProfile.formSelectCategory')} />
             </SelectTrigger>
             <SelectContent>
               {PRODUCT_CATEGORIES.map((c) => (
@@ -475,7 +481,7 @@ export default function SupplierProfilePage() {
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="form-price">Price per unit (USDC)</Label>
+        <Label htmlFor="form-price">{t('supplierProfile.formPriceLabel')}</Label>
         <Input
           id="form-price"
           type="number"
@@ -486,12 +492,12 @@ export default function SupplierProfilePage() {
           onChange={(e) =>
             setFormProduct((prev) => ({ ...prev, price_per_unit: e.target.value }))
           }
-          placeholder="90.00"
+          placeholder={t('supplierProfile.formPricePh')}
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="form-min-order">Minimum order (USD, optional)</Label>
+          <Label htmlFor="form-min-order">{t('supplierProfile.formMinOrder')}</Label>
           <Input
             id="form-min-order"
             type="number"
@@ -502,31 +508,31 @@ export default function SupplierProfilePage() {
             onChange={(e) =>
               setFormProduct((prev) => ({ ...prev, minimum_order: e.target.value }))
             }
-            placeholder="e.g. 8000"
+            placeholder={t('supplierProfile.formMinOrderPh')}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="form-delivery">Typical delivery time (optional)</Label>
+          <Label htmlFor="form-delivery">{t('supplierProfile.formDelivery')}</Label>
           <Input
             id="form-delivery"
             value={formProduct.delivery_time}
             onChange={(e) =>
               setFormProduct((prev) => ({ ...prev, delivery_time: e.target.value }))
             }
-            placeholder="e.g. 7–10 days"
+            placeholder={t('supplierProfile.formDeliveryPh')}
             autoComplete="off"
           />
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="form-desc">Description (optional)</Label>
+        <Label htmlFor="form-desc">{t('supplierProfile.formDescription')}</Label>
         <Textarea
           id="form-desc"
           value={formProduct.description}
           onChange={(e) =>
             setFormProduct((prev) => ({ ...prev, description: e.target.value }))
           }
-          placeholder="e.g. Industrial wheat flour (25kg & 50kg sacks)"
+          placeholder={t('supplierProfile.formDescriptionPh')}
           rows={3}
           className="resize-none"
         />
@@ -540,15 +546,15 @@ export default function SupplierProfilePage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild aria-label="Back to dashboard">
+          <Button variant="ghost" size="icon" asChild aria-label={t('supplierProfile.backAria')}>
             <Link href="/dashboard">
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Supplier profile</h1>
+            <h1 className="text-3xl font-bold">{t('supplierProfile.title')}</h1>
             <p className="text-muted-foreground">
-              Company bio and product catalog. PyMEs select from your catalog when creating deals.
+              {t('supplierProfile.subtitle')}
             </p>
           </div>
         </div>
@@ -556,9 +562,9 @@ export default function SupplierProfilePage() {
         {companies.length === 0 ? (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-lg">Create your first company</CardTitle>
+              <CardTitle className="text-lg">{t('supplierProfile.firstCompanyTitle')}</CardTitle>
               <CardDescription>
-                You can add multiple supplier companies under one account. Start with one.
+                {t('supplierProfile.firstCompanyDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -588,10 +594,10 @@ export default function SupplierProfilePage() {
                     setNewCompanySector('')
                     setNewCompanyPhone('')
                     setAddCompanyOpen(false)
-                    toast.success('Company created.')
+                    toast.success(t('supplierProfile.toastCompanyCreated'))
                   } catch (err) {
                     console.error(err)
-                    toast.error('Failed to create company.')
+                    toast.error(t('supplierProfile.toastCompanyCreateFail'))
                   } finally {
                     setAddCompanySaving(false)
                   }
@@ -599,32 +605,32 @@ export default function SupplierProfilePage() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="new-company-name">Company name</Label>
+                  <Label htmlFor="new-company-name">{t('supplierProfile.companyName')}</Label>
                   <Input
                     id="new-company-name"
                     value={newCompanyName}
                     onChange={(e) => setNewCompanyName(e.target.value)}
-                    placeholder="e.g. Acme Supplies"
+                    placeholder={t('supplierProfile.placeholderCompanyPh')}
                     autoComplete="organization"
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="new-company-phone">Phone</Label>
+                    <Label htmlFor="new-company-phone">{t('supplierProfile.phone')}</Label>
                     <Input
                       id="new-company-phone"
                       type="tel"
                       value={newCompanyPhone}
                       onChange={(e) => setNewCompanyPhone(e.target.value)}
-                      placeholder="e.g. +595 21 123 456"
+                      placeholder={t('supplierProfile.placeholderPhonePh')}
                       autoComplete="tel"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="new-company-country">Country</Label>
+                    <Label htmlFor="new-company-country">{t('supplierProfile.country')}</Label>
                     <Select value={newCompanyCountry || undefined} onValueChange={setNewCompanyCountry}>
-                      <SelectTrigger id="new-company-country" aria-label="Country">
-                        <SelectValue placeholder="Select country" />
+                      <SelectTrigger id="new-company-country" aria-label={t('supplierProfile.country')}>
+                        <SelectValue placeholder={t('supplierProfile.selectCountry')} />
                       </SelectTrigger>
                       <SelectContent>
                         {LATAM_COUNTRIES.map((c) => (
@@ -636,10 +642,10 @@ export default function SupplierProfilePage() {
                     </Select>
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="new-company-sector">Sector</Label>
+                    <Label htmlFor="new-company-sector">{t('supplierProfile.sector')}</Label>
                     <Select value={newCompanySector || undefined} onValueChange={setNewCompanySector}>
-                      <SelectTrigger id="new-company-sector" aria-label="Sector">
-                        <SelectValue placeholder="Select sector" />
+                      <SelectTrigger id="new-company-sector" aria-label={t('supplierProfile.sector')}>
+                        <SelectValue placeholder={t('supplierProfile.selectSector')} />
                       </SelectTrigger>
                       <SelectContent>
                         {SECTORS.map((s) => (
@@ -655,10 +661,10 @@ export default function SupplierProfilePage() {
                   {addCompanySaving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                      Creating…
+                      {t('supplierProfile.creating')}
                     </>
                   ) : (
-                    'Create company'
+                    t('supplierProfile.createCompany')
                   )}
                 </Button>
               </form>
@@ -669,19 +675,19 @@ export default function SupplierProfilePage() {
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
                 <Label htmlFor="company-select" className="text-sm text-muted-foreground">
-                  Company
+                  {t('supplierProfile.companyLabel')}
                 </Label>
                 <Select
                   value={selectedCompanyId ?? ''}
                   onValueChange={(id) => setSelectedCompanyId(id)}
                 >
                   <SelectTrigger id="company-select" className="w-[220px]">
-                    <SelectValue placeholder="Select company" />
+                    <SelectValue placeholder={t('supplierProfile.selectCompany')} />
                   </SelectTrigger>
                   <SelectContent>
                     {companies.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
-                        {c.company_name || 'Unnamed company'}
+                        {c.company_name || t('supplierProfile.unnamedCompany')}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -689,40 +695,40 @@ export default function SupplierProfilePage() {
               </div>
               <Button variant="outline" size="sm" onClick={() => setAddCompanyOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" aria-hidden />
-                Add company
+                {t('supplierProfile.addCompany')}
               </Button>
             </div>
 
             {/* Company bio & details */}
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle className="text-lg">Company details</CardTitle>
+                <CardTitle className="text-lg">{t('supplierProfile.companyDetailsTitle')}</CardTitle>
                 <CardDescription>
-                  Country, sector, phone, and bio for this company. Shown to PyMEs when they browse suppliers.
+                  {t('supplierProfile.companyDetailsDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSaveBio} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="company-phone">Phone</Label>
+                      <Label htmlFor="company-phone">{t('supplierProfile.phone')}</Label>
                       <Input
                         id="company-phone"
                         type="tel"
                         value={companyPhone}
                         onChange={(e) => setCompanyPhone(e.target.value)}
-                        placeholder="e.g. +595 21 123 456"
+                        placeholder={t('supplierProfile.placeholderPhonePh')}
                         autoComplete="tel"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="company-country">Country</Label>
+                      <Label htmlFor="company-country">{t('supplierProfile.country')}</Label>
                       <Select
                         value={companyCountry || undefined}
                         onValueChange={setCompanyCountry}
                       >
-                        <SelectTrigger id="company-country" aria-label="Company country">
-                          <SelectValue placeholder="Select country" />
+                        <SelectTrigger id="company-country" aria-label={t('supplierProfile.country')}>
+                          <SelectValue placeholder={t('supplierProfile.selectCountry')} />
                         </SelectTrigger>
                         <SelectContent>
                           {LATAM_COUNTRIES.map((c) => (
@@ -734,13 +740,13 @@ export default function SupplierProfilePage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="company-sector">Sector</Label>
+                      <Label htmlFor="company-sector">{t('supplierProfile.sector')}</Label>
                       <Select
                         value={companySector || undefined}
                         onValueChange={setCompanySector}
                       >
-                        <SelectTrigger id="company-sector" aria-label="Company sector">
-                          <SelectValue placeholder="Select sector" />
+                        <SelectTrigger id="company-sector" aria-label={t('supplierProfile.sector')}>
+                          <SelectValue placeholder={t('supplierProfile.selectSector')} />
                         </SelectTrigger>
                         <SelectContent>
                           {SECTORS.map((s) => (
@@ -752,12 +758,12 @@ export default function SupplierProfilePage() {
                       </Select>
                     </div>
                     <div className="space-y-2 sm:col-span-2">
-                      <Label htmlFor="bio">Bio</Label>
+                      <Label htmlFor="bio">{t('supplierProfile.bio')}</Label>
                       <Textarea
                         id="bio"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        placeholder="e.g., We supply wholesale ingredients to bakeries and restaurants…"
+                        placeholder={t('supplierProfile.placeholderBioPh')}
                         rows={4}
                         className="resize-none"
                       />
@@ -767,10 +773,10 @@ export default function SupplierProfilePage() {
                     {isSavingBio ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                        Saving…
+                        {t('supplierProfile.savingDetails')}
                       </>
                     ) : (
-                      'Save details'
+                      t('supplierProfile.saveDetails')
                     )}
                   </Button>
                 </form>
@@ -783,16 +789,16 @@ export default function SupplierProfilePage() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="h-5 w-5" aria-hidden />
-                    Product catalog
+                    {t('supplierProfile.catalogTitle')}
                   </CardTitle>
                   <CardDescription>
-                    Add and manage products for this company. PyMEs choose quantity when creating a deal.
+                    {t('supplierProfile.catalogDescription')}
                   </CardDescription>
                 </div>
                 <Button onClick={openAddDialog} className="shrink-0 gap-2">
-              <Plus className="h-4 w-4" aria-hidden />
-              Add product
-            </Button>
+                  <Plus className="h-4 w-4" aria-hidden />
+                  {t('supplierProfile.addProduct')}
+                </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Toolbar: search, filter, sort */}
@@ -801,14 +807,14 @@ export default function SupplierProfilePage() {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
                 <Input
                   type="search"
-                  placeholder="Search products…"
+                  placeholder={t('supplierProfile.searchProducts')}
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value)
                     setPage(0)
                   }}
                   className="pl-9"
-                  aria-label="Search products"
+                  aria-label={t('supplierProfile.searchProductsAria')}
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -820,10 +826,10 @@ export default function SupplierProfilePage() {
                   }}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder={t('supplierProfile.categoryPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All categories</SelectItem>
+                    <SelectItem value="all">{t('supplierProfile.allCategories')}</SelectItem>
                     {categoriesFromProducts.map((c) => (
                       <SelectItem key={c} value={c}>
                         {getCategoryLabel(c)}
@@ -839,10 +845,10 @@ export default function SupplierProfilePage() {
                   }}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
+                    <SelectValue placeholder={t('supplierProfile.sortBy')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {SORT_OPTIONS.map((opt) => (
+                    {sortOptions.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         {opt.label}
                       </SelectItem>
@@ -858,20 +864,20 @@ export default function SupplierProfilePage() {
                 {products.length === 0 ? (
                   <>
                     <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground" aria-hidden />
-                    <p className="font-medium">No products yet</p>
+                    <p className="font-medium">{t('supplierProfile.noProductsYet')}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Add your first product so PyMEs can select from your catalog.
+                      {t('supplierProfile.noProductsHint')}
                     </p>
                     <Button onClick={openAddDialog} className="mt-4 gap-2">
                       <Plus className="h-4 w-4" aria-hidden />
-                      Add product
+                      {t('supplierProfile.addProduct')}
                     </Button>
                   </>
                 ) : (
                   <>
-                    <p className="font-medium">No matches</p>
+                    <p className="font-medium">{t('supplierProfile.noMatches')}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Try a different search or category filter.
+                      {t('supplierProfile.noMatchesHint')}
                     </p>
                     <Button
                       variant="outline"
@@ -882,7 +888,7 @@ export default function SupplierProfilePage() {
                         setPage(0)
                       }}
                     >
-                      Clear filters
+                      {t('common.clearFilters')}
                     </Button>
                   </>
                 )}
@@ -893,13 +899,13 @@ export default function SupplierProfilePage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead className="text-right">Price / unit</TableHead>
-                        <TableHead className="text-right">Min. order</TableHead>
-                        <TableHead>Delivery</TableHead>
-                        <TableHead className="max-w-[200px]">Description</TableHead>
-                        <TableHead className="w-[100px] text-right">Actions</TableHead>
+                        <TableHead>{t('supplierProfile.tableName')}</TableHead>
+                        <TableHead>{t('supplierProfile.tableCategory')}</TableHead>
+                        <TableHead className="text-right">{t('supplierProfile.tablePriceUnit')}</TableHead>
+                        <TableHead className="text-right">{t('supplierProfile.tableMinOrder')}</TableHead>
+                        <TableHead>{t('supplierProfile.tableDelivery')}</TableHead>
+                        <TableHead className="max-w-[200px]">{t('supplierProfile.tableDescription')}</TableHead>
+                        <TableHead className="w-[100px] text-right">{t('supplierProfile.tableActions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -928,7 +934,7 @@ export default function SupplierProfilePage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => openEditDialog(p)}
-                                aria-label={`Edit ${p.name}`}
+                                aria-label={t('supplierProfile.editAria', { name: p.name })}
                               >
                                 <Pencil className="h-4 w-4" aria-hidden />
                               </Button>
@@ -938,7 +944,7 @@ export default function SupplierProfilePage() {
                                 size="icon"
                                 className="text-destructive hover:text-destructive"
                                 onClick={() => setDeleteProduct(p)}
-                                aria-label={`Delete ${p.name}`}
+                                aria-label={t('supplierProfile.deleteAria', { name: p.name })}
                               >
                                 <Trash2 className="h-4 w-4" aria-hidden />
                               </Button>
@@ -954,7 +960,11 @@ export default function SupplierProfilePage() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-sm text-muted-foreground">
-                      Showing {currentPage * PAGE_SIZE + 1}–{Math.min((currentPage + 1) * PAGE_SIZE, filteredAndSorted.length)} of {filteredAndSorted.length}
+                      {t('supplierProfile.showingRange', {
+                        from: currentPage * PAGE_SIZE + 1,
+                        to: Math.min((currentPage + 1) * PAGE_SIZE, filteredAndSorted.length),
+                        total: filteredAndSorted.length,
+                      })}
                     </p>
                     <div className="flex items-center gap-2">
                       <Button
@@ -965,10 +975,10 @@ export default function SupplierProfilePage() {
                         disabled={currentPage === 0}
                       >
                         <ChevronLeft className="h-4 w-4" aria-hidden />
-                        Previous
+                        {t('supplierProfile.previous')}
                       </Button>
                       <span className="text-sm text-muted-foreground">
-                        Page {currentPage + 1} of {totalPages}
+                        {t('supplierProfile.pageOf', { current: currentPage + 1, total: totalPages })}
                       </span>
                       <Button
                         type="button"
@@ -977,7 +987,7 @@ export default function SupplierProfilePage() {
                         onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                         disabled={currentPage >= totalPages - 1}
                       >
-                        Next
+                        {t('supplierProfile.next')}
                         <ChevronRight className="h-4 w-4" aria-hidden />
                       </Button>
                     </div>
@@ -989,9 +999,9 @@ export default function SupplierProfilePage() {
         </Card>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
-              Contact info and wallet address?{' '}
+              {t('supplierProfile.footerHint')}{' '}
               <Link href="/settings" className="underline hover:text-foreground">
-                Settings
+                {t('supplierProfile.settingsLink')}
               </Link>
             </p>
           </>
@@ -1003,9 +1013,9 @@ export default function SupplierProfilePage() {
       <Dialog open={addCompanyOpen} onOpenChange={setAddCompanyOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add company</DialogTitle>
+            <DialogTitle>{t('supplierProfile.dialogAddCompanyTitle')}</DialogTitle>
             <DialogDescription>
-              Add another supplier company to your account. Each company has its own catalog and bio.
+              {t('supplierProfile.dialogAddCompanyDescription')}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -1034,10 +1044,10 @@ export default function SupplierProfilePage() {
                 setNewCompanySector('')
                 setNewCompanyPhone('')
                 setAddCompanyOpen(false)
-                toast.success('Company added.')
+                toast.success(t('supplierProfile.toastCompanyAdded'))
               } catch (err) {
                 console.error(err)
-                toast.error('Failed to add company.')
+                toast.error(t('supplierProfile.toastCompanyAddFail'))
               } finally {
                 setAddCompanySaving(false)
               }
@@ -1045,32 +1055,32 @@ export default function SupplierProfilePage() {
           >
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="dialog-company-name">Company name</Label>
+                <Label htmlFor="dialog-company-name">{t('supplierProfile.companyName')}</Label>
                 <Input
                   id="dialog-company-name"
                   value={newCompanyName}
                   onChange={(e) => setNewCompanyName(e.target.value)}
-                  placeholder="e.g. Acme Supplies"
+                  placeholder={t('supplierProfile.placeholderCompanyPh')}
                   autoComplete="organization"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dialog-company-phone">Phone</Label>
+                <Label htmlFor="dialog-company-phone">{t('supplierProfile.phone')}</Label>
                 <Input
                   id="dialog-company-phone"
                   type="tel"
                   value={newCompanyPhone}
                   onChange={(e) => setNewCompanyPhone(e.target.value)}
-                  placeholder="e.g. +595 21 123 456"
+                  placeholder={t('supplierProfile.placeholderPhonePh')}
                   autoComplete="tel"
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="dialog-company-country">Country</Label>
+                  <Label htmlFor="dialog-company-country">{t('supplierProfile.country')}</Label>
                   <Select value={newCompanyCountry || undefined} onValueChange={setNewCompanyCountry}>
-                    <SelectTrigger id="dialog-company-country" aria-label="Country">
-                      <SelectValue placeholder="Select country" />
+                    <SelectTrigger id="dialog-company-country" aria-label={t('supplierProfile.country')}>
+                      <SelectValue placeholder={t('supplierProfile.selectCountry')} />
                     </SelectTrigger>
                     <SelectContent>
                       {LATAM_COUNTRIES.map((c) => (
@@ -1082,10 +1092,10 @@ export default function SupplierProfilePage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dialog-company-sector">Sector</Label>
+                  <Label htmlFor="dialog-company-sector">{t('supplierProfile.sector')}</Label>
                   <Select value={newCompanySector || undefined} onValueChange={setNewCompanySector}>
-                    <SelectTrigger id="dialog-company-sector" aria-label="Sector">
-                      <SelectValue placeholder="Select sector" />
+                    <SelectTrigger id="dialog-company-sector" aria-label={t('supplierProfile.sector')}>
+                      <SelectValue placeholder={t('supplierProfile.selectSector')} />
                     </SelectTrigger>
                     <SelectContent>
                       {SECTORS.map((s) => (
@@ -1100,16 +1110,16 @@ export default function SupplierProfilePage() {
             </div>
             <DialogFooter className="mt-6">
               <Button type="button" variant="outline" onClick={() => setAddCompanyOpen(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={addCompanySaving || !newCompanyName.trim()}>
                 {addCompanySaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                    Adding…
+                    {t('supplierProfile.adding')}
                   </>
                 ) : (
-                  'Add company'
+                  t('supplierProfile.addCompany')
                 )}
               </Button>
             </DialogFooter>
@@ -1121,9 +1131,9 @@ export default function SupplierProfilePage() {
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add product</DialogTitle>
+            <DialogTitle>{t('supplierProfile.dialogAddProductTitle')}</DialogTitle>
             <DialogDescription>
-              Name, category, and price per unit (USDC) are required. PyMEs will set quantity when creating a deal.
+              {t('supplierProfile.dialogAddProductDescription')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddProduct}>
@@ -1134,16 +1144,16 @@ export default function SupplierProfilePage() {
                 variant="outline"
                 onClick={() => setAddDialogOpen(false)}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={formSaving}>
                 {formSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                    Adding…
+                    {t('supplierProfile.adding')}
                   </>
                 ) : (
-                  'Add product'
+                  t('supplierProfile.addProduct')
                 )}
               </Button>
             </DialogFooter>
@@ -1155,9 +1165,9 @@ export default function SupplierProfilePage() {
       <Dialog open={!!editingProduct} onOpenChange={(open) => !open && setEditingProduct(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit product</DialogTitle>
+            <DialogTitle>{t('supplierProfile.dialogEditProductTitle')}</DialogTitle>
             <DialogDescription>
-              Update name, category, price, or description.
+              {t('supplierProfile.dialogEditProductDescription')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleUpdateProduct}>
@@ -1168,16 +1178,16 @@ export default function SupplierProfilePage() {
                 variant="outline"
                 onClick={() => setEditingProduct(null)}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={formSaving}>
                 {formSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                    Saving…
+                    {t('common.saving')}
                   </>
                 ) : (
-                  'Save changes'
+                  t('supplierProfile.saveChanges')
                 )}
               </Button>
             </DialogFooter>
@@ -1189,18 +1199,18 @@ export default function SupplierProfilePage() {
       <AlertDialog open={!!deleteProduct} onOpenChange={(open) => !open && setDeleteProduct(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove product?</AlertDialogTitle>
+            <AlertDialogTitle>{t('supplierProfile.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove &quot;{deleteProduct?.name}&quot; from your catalog. PyMEs will no longer see it when creating deals. This cannot be undone.
+              {t('supplierProfile.deleteDescription', { name: deleteProduct?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteProduct}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Remove
+              {t('supplierProfile.remove')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

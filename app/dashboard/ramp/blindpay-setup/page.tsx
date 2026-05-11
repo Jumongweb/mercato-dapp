@@ -19,6 +19,7 @@ import { useWallet } from '@/hooks/use-wallet'
 import { SUPPORTED_COUNTRIES } from '@/lib/constants'
 import { ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useI18n } from '@/lib/i18n/provider'
 
 export default function BlindPaySetupPage() {
   return (
@@ -39,6 +40,7 @@ function BlindPaySetupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { walletInfo, isConnected, handleConnect } = useWallet()
+  const { t } = useI18n()
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [tosId, setTosId] = useState('')
   const [receiverId, setReceiverId] = useState('')
@@ -101,11 +103,11 @@ function BlindPaySetupContent() {
         `/api/ramp/blindpay/tos-url?provider=blindpay&redirectUrl=${encodeURIComponent(redirectUrl)}`
       )
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to get ToS URL')
+      if (!res.ok) throw new Error(data.error || t('blindpaySetup.errorTosUrl'))
       window.open(data.url, '_blank', 'noopener,noreferrer')
-      toast.success('Complete the Terms of Service in the new tab, then return here.')
+      toast.success(t('blindpaySetup.toastTosOpen'))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to open ToS')
+      toast.error(e instanceof Error ? e.message : t('blindpaySetup.toastTosFail'))
     } finally {
       setLoading(false)
     }
@@ -137,12 +139,12 @@ function BlindPaySetupContent() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to create receiver')
+      if (!res.ok) throw new Error(data.error || t('blindpaySetup.errorReceiver'))
       setReceiverId(data.id)
       setStep(3)
-      toast.success('KYC submitted. Register your wallet next.')
+      toast.success(t('blindpaySetup.toastKycSuccess'))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to submit KYC')
+      toast.error(e instanceof Error ? e.message : t('blindpaySetup.toastKycFail'))
     } finally {
       setLoading(false)
     }
@@ -150,7 +152,7 @@ function BlindPaySetupContent() {
 
   const handleRegisterWallet = async () => {
     if (!walletInfo?.address) {
-      toast.error('Connect your Stellar wallet first')
+      toast.error(t('blindpaySetup.toastConnectFirst'))
       return
     }
     setLoading(true)
@@ -161,15 +163,15 @@ function BlindPaySetupContent() {
         body: JSON.stringify({
           receiverId,
           address: walletInfo.address,
-          name: 'Stellar Wallet',
+          name: t('blindpaySetup.walletDisplayName'),
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to register wallet')
-      toast.success('BlindPay setup complete!')
+      if (!res.ok) throw new Error(data.error || t('blindpaySetup.errorRegister'))
+      toast.success(t('blindpaySetup.toastSetupComplete'))
       router.push(`/dashboard/ramp?provider=blindpay&blindpay_setup=${encodeURIComponent(data.compositeId)}&blindpay_email=${encodeURIComponent(form.email || userEmail)}`)
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to register wallet')
+      toast.error(e instanceof Error ? e.message : t('blindpaySetup.toastRegisterFail'))
     } finally {
       setLoading(false)
     }
@@ -182,12 +184,12 @@ function BlindPaySetupContent() {
         <Button variant="ghost" size="sm" asChild>
           <Link href="/dashboard/ramp" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Ramp
+            {t('blindpaySetup.backRamp')}
           </Link>
         </Button>
-        <h1 className="mt-6 text-2xl font-bold">BlindPay Onboarding</h1>
+        <h1 className="mt-6 text-2xl font-bold">{t('blindpaySetup.pageTitle')}</h1>
         <p className="mt-1 text-muted-foreground">
-          Complete these steps to add funds via BlindPay.
+          {t('blindpaySetup.pageDescription')}
         </p>
 
         <div className="mt-8 space-y-6">
@@ -196,32 +198,32 @@ function BlindPaySetupContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</span>
-                  Accept Terms of Service
+                  {t('blindpaySetup.step1Title')}
                 </CardTitle>
                 <CardDescription>
-                  Open the link below to accept BlindPay&apos;s Terms of Service. You may need to complete this in a new tab. After accepting, return to this page — you may be redirected back automatically with a confirmation.
+                  {t('blindpaySetup.step1Description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button onClick={handleOpenTos} disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  Open Terms of Service
+                  {t('blindpaySetup.openTos')}
                 </Button>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  If you were redirected back with a <code>tos_id</code> in the URL, you can continue to Step 2.
+                  {t('blindpaySetup.step1Hint')}
                 </p>
                 <Button
                   variant="outline"
                   className="mt-3"
                   onClick={() => {
-                    const id = prompt('Paste the tos_id from the ToS completion page (if BlindPay showed it):')
+                    const id = prompt(t('blindpaySetup.tosPrompt'))
                     if (id) {
                       setTosId(id)
                       setStep(2)
                     }
                   }}
                 >
-                  I have a tos_id
+                  {t('blindpaySetup.haveTosId')}
                 </Button>
               </CardContent>
             </Card>
@@ -236,19 +238,19 @@ function BlindPaySetupContent() {
                   ) : (
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</span>
                   )}
-                  KYC Information
+                  {t('blindpaySetup.step2Title')}
                 </CardTitle>
                 <CardDescription>
-                  Enter your details for BlindPay verification. On development instances, KYC is usually auto-approved.
+                  {t('blindpaySetup.step2Description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmitKyc} className="space-y-4">
                   {!tosId && (
                     <div className="grid gap-2">
-                      <Label>TOS ID (from Step 1)</Label>
+                      <Label>{t('blindpaySetup.labelTosId')}</Label>
                       <Input
-                        placeholder="to_xxx"
+                        placeholder={t('blindpaySetup.tosPlaceholder')}
                         value={tosId}
                         onChange={(e) => setTosId(e.target.value)}
                         required
@@ -257,7 +259,7 @@ function BlindPaySetupContent() {
                   )}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>First name</Label>
+                      <Label>{t('blindpaySetup.firstName')}</Label>
                       <Input
                         value={form.first_name}
                         onChange={(e) => setForm((f) => ({ ...f, first_name: e.target.value }))}
@@ -265,7 +267,7 @@ function BlindPaySetupContent() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Last name</Label>
+                      <Label>{t('blindpaySetup.lastName')}</Label>
                       <Input
                         value={form.last_name}
                         onChange={(e) => setForm((f) => ({ ...f, last_name: e.target.value }))}
@@ -274,26 +276,26 @@ function BlindPaySetupContent() {
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label>Email</Label>
+                    <Label>{t('blindpaySetup.email')}</Label>
                     <Input
                       type="email"
                       value={form.email || userEmail}
                       onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                      placeholder={userEmail || 'you@example.com'}
+                      placeholder={userEmail || t('blindpaySetup.emailPlaceholder')}
                       required
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Tax ID (e.g. CURP for Mexico)</Label>
+                    <Label>{t('blindpaySetup.taxId')}</Label>
                     <Input
                       value={form.tax_id}
                       onChange={(e) => setForm((f) => ({ ...f, tax_id: e.target.value }))}
-                      placeholder="CURP or RFC"
+                      placeholder={t('blindpaySetup.taxPlaceholder')}
                       required
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Address</Label>
+                    <Label>{t('blindpaySetup.address')}</Label>
                     <Input
                       value={form.address_line_1}
                       onChange={(e) => setForm((f) => ({ ...f, address_line_1: e.target.value }))}
@@ -302,7 +304,7 @@ function BlindPaySetupContent() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>City</Label>
+                      <Label>{t('blindpaySetup.city')}</Label>
                       <Input
                         value={form.city}
                         onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
@@ -310,18 +312,18 @@ function BlindPaySetupContent() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>State / Region</Label>
+                      <Label>{t('blindpaySetup.stateRegion')}</Label>
                       <Input
                         value={form.state_province_region}
                         onChange={(e) => setForm((f) => ({ ...f, state_province_region: e.target.value }))}
-                        placeholder="CDMX"
+                        placeholder={t('blindpaySetup.statePlaceholder')}
                         required
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Country</Label>
+                      <Label>{t('blindpaySetup.country')}</Label>
                       <Select
                         value={form.country}
                         onValueChange={(v) => setForm((f) => ({ ...f, country: v }))}
@@ -339,7 +341,7 @@ function BlindPaySetupContent() {
                       </Select>
                     </div>
                     <div className="grid gap-2">
-                      <Label>Postal code</Label>
+                      <Label>{t('blindpaySetup.postalCode')}</Label>
                       <Input
                         value={form.postal_code}
                         onChange={(e) => setForm((f) => ({ ...f, postal_code: e.target.value }))}
@@ -349,16 +351,16 @@ function BlindPaySetupContent() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label>Phone (E.164)</Label>
+                      <Label>{t('blindpaySetup.phone')}</Label>
                       <Input
                         value={form.phone_number}
                         onChange={(e) => setForm((f) => ({ ...f, phone_number: e.target.value }))}
-                        placeholder="+525512345678"
+                        placeholder={t('blindpaySetup.phonePlaceholder')}
                         required
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label>Date of birth</Label>
+                      <Label>{t('blindpaySetup.dateOfBirth')}</Label>
                       <Input
                         type="date"
                         value={form.date_of_birth}
@@ -368,7 +370,7 @@ function BlindPaySetupContent() {
                   </div>
                   <Button type="submit" disabled={loading}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                    Submit KYC
+                    {t('blindpaySetup.submitKyc')}
                   </Button>
                 </form>
               </CardContent>
@@ -380,23 +382,26 @@ function BlindPaySetupContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle2 className="h-7 w-7 text-green-500" />
-                  Register your Stellar wallet
+                  {t('blindpaySetup.step3Title')}
                 </CardTitle>
                 <CardDescription>
-                  Connect your Stellar wallet to receive USDC when you add funds via BlindPay.
+                  {t('blindpaySetup.step3Description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {!isConnected ? (
-                  <Button onClick={handleConnect}>Connect wallet</Button>
+                  <Button onClick={handleConnect}>{t('blindpaySetup.connectWallet')}</Button>
                 ) : (
                   <>
                     <p className="text-sm text-muted-foreground">
-                      Wallet: {walletInfo?.address?.slice(0, 8)}…{walletInfo?.address?.slice(-8)}
+                      {t('blindpaySetup.walletLine', {
+                        start: walletInfo?.address?.slice(0, 8) ?? '',
+                        end: walletInfo?.address?.slice(-8) ?? '',
+                      })}
                     </p>
                     <Button onClick={handleRegisterWallet} disabled={loading}>
                       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                      Register this wallet
+                      {t('blindpaySetup.registerWallet')}
                     </Button>
                   </>
                 )}
