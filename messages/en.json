@@ -111,7 +111,11 @@
     "continueWithPollarShort": "Google, GitHub, email OTP or wallet — no seed phrase",
     "signInWithPasswordInstead": "Or sign in with email and password",
     "pollarSignUpHint": "Creates your Mercato account automatically after you authenticate with Pollar.",
-    "or": "Or"
+    "or": "Or",
+    "selectRoleTitle": "One last step",
+    "selectRoleDescription": "Tell us how you'll use Mercato so we can tailor your experience.",
+    "selectRoleContinue": "Continue",
+    "selectRoleSaving": "Saving..."
   },
   "deals": {
     "eyebrow": "Supply chain deals",

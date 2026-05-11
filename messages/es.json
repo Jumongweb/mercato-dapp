@@ -111,7 +111,11 @@
     "continueWithPollarShort": "Google, GitHub, código por correo o billetera — sin frase semilla",
     "signInWithPasswordInstead": "O inicia sesión con correo y contraseña",
     "pollarSignUpHint": "Crea tu cuenta de Mercato automáticamente tras autenticarte con Pollar.",
-    "or": "O"
+    "or": "O",
+    "selectRoleTitle": "Un último paso",
+    "selectRoleDescription": "Cuéntanos cómo usarás Mercato para personalizar tu experiencia.",
+    "selectRoleContinue": "Continuar",
+    "selectRoleSaving": "Guardando..."
   },
   "deals": {
     "eyebrow": "Órdenes de cadena de suministro",

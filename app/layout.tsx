@@ -11,6 +11,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { I18nProvider } from '@/lib/i18n/provider'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { getServerLocale } from '@/lib/i18n/server'
+import { UserTypeGate } from '@/components/user-type-gate'
 
 import './globals.css'
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
             <TrustlessWorkProvider>
               <WalletProvider>
                 <I18nProvider locale={locale} messages={messages}>
+                  <UserTypeGate />
                   {children}
                   <Toaster />
                 </I18nProvider>
