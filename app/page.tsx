@@ -134,6 +134,82 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Stellar Ecosystem Partners */}
+      <section className="border-y border-border/40 bg-muted/20 py-8">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-4xl">
+            <p className="mb-7 text-center text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+              Built with the Stellar ecosystem
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14">
+
+              {/* Trustless Work */}
+              <a
+                href="https://trustlesswork.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Trustless Work — escrow infrastructure"
+                className="group flex items-center gap-2.5 opacity-60 transition-all duration-200 hover:opacity-100"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/trustless-work-logo.png"
+                  alt="Trustless Work"
+                  width={28}
+                  height={28}
+                  className="h-7 w-auto object-contain"
+                />
+                <span className="text-sm font-semibold tracking-tight text-foreground/70 transition-colors group-hover:text-foreground">
+                  Trustless Work
+                </span>
+              </a>
+
+              <span className="hidden h-4 w-px bg-border/60 sm:block" aria-hidden />
+
+              {/* Etherfuse */}
+              <a
+                href="https://etherfuse.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Etherfuse — fiat on/off ramp"
+                className="opacity-60 transition-all duration-200 hover:opacity-100"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/etherfuse-logo.svg"
+                  alt="Etherfuse"
+                  height={24}
+                  className="h-6 w-auto object-contain dark:invert"
+                />
+              </a>
+
+              <span className="hidden h-4 w-px bg-border/60 sm:block" aria-hidden />
+
+              {/* DeFindex — white SVG, needs dark pill in light mode */}
+              <a
+                href="https://defindex.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="DeFindex — yield vault infrastructure"
+                className="group opacity-60 transition-all duration-200 hover:opacity-100"
+              >
+                <span className="flex items-center rounded-lg bg-gray-900 px-3 py-1.5 transition-colors group-hover:bg-gray-800 dark:bg-transparent dark:px-0 dark:py-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/defindex-logo.svg"
+                    alt="DeFindex"
+                    height={28}
+                    className="h-7 w-auto object-contain"
+                  />
+                </span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Deal Cycle Section */}
       <section
         className="container mx-auto px-4 py-16"
@@ -660,83 +736,6 @@ export default async function HomePage() {
                   </p>
                 </div>
               </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stellar Ecosystem Partners */}
-      <section className="border-t border-border/50 bg-muted/20 py-14">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl">
-            <p className="mb-10 text-center text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
-              Built with the Stellar ecosystem
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-8 sm:gap-x-14">
-
-              {/* Trustless Work */}
-              <a
-                href="https://trustlesswork.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Trustless Work — escrow infrastructure"
-                className="group flex items-center gap-2.5 opacity-60 transition-all duration-200 hover:opacity-100"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/trustless-work-logo.png"
-                  alt="Trustless Work"
-                  width={28}
-                  height={28}
-                  className="h-7 w-auto object-contain"
-                />
-                <span className="text-sm font-semibold tracking-tight text-foreground/70 transition-colors group-hover:text-foreground">
-                  Trustless Work
-                </span>
-              </a>
-
-              <span className="hidden h-4 w-px bg-border/60 sm:block" aria-hidden />
-
-              {/* Etherfuse */}
-              <a
-                href="https://etherfuse.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Etherfuse — fiat on/off ramp"
-                className="opacity-60 transition-all duration-200 hover:opacity-100"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/etherfuse-logo.svg"
-                  alt="Etherfuse"
-                  height={24}
-                  className="h-6 w-auto object-contain dark:invert"
-                />
-              </a>
-
-              <span className="hidden h-4 w-px bg-border/60 sm:block" aria-hidden />
-
-              {/* DeFindex — white SVG, needs dark pill in light mode */}
-              <a
-                href="https://defindex.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="DeFindex — yield vault infrastructure"
-                className="group opacity-60 transition-all duration-200 hover:opacity-100"
-              >
-                <span className="flex items-center rounded-lg bg-gray-900 px-3 py-1.5 transition-colors group-hover:bg-gray-800 dark:bg-transparent dark:px-0 dark:py-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/defindex-logo.svg"
-                    alt="DeFindex"
-                    height={28}
-                    className="h-7 w-auto object-contain"
-                  />
-                </span>
-              </a>
-
 
             </div>
           </div>
