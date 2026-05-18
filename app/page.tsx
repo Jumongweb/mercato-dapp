@@ -737,27 +737,6 @@ export default async function HomePage() {
                 </span>
               </a>
 
-              <span className="hidden h-4 w-px bg-border/60 sm:block" aria-hidden />
-
-              {/* Stellar */}
-              <a
-                href="https://stellar.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Stellar — blockchain layer"
-                className="group flex items-center gap-2 opacity-60 transition-all duration-200 hover:opacity-100"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5 fill-foreground/70 transition-colors group-hover:fill-foreground"
-                  aria-hidden
-                >
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.8 17.4l-1.3.6-8.9-4.1.6-1.3 7.5 3.4-5.5-8.2 1.1-.8 7.5 11.2-.9-.6.6-1.3.9.6-.1.5z"/>
-                </svg>
-                <span className="text-sm font-semibold tracking-tight text-foreground/70 transition-colors group-hover:text-foreground">
-                  Stellar
-                </span>
-              </a>
 
             </div>
           </div>
