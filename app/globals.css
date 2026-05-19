@@ -9,6 +9,16 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 150 15% 8%;
@@ -215,6 +225,11 @@
 .mockup-reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Landing in-page nav targets (sticky header offset) */
+.landing-section-anchor {
+  scroll-margin-top: 5.5rem;
 }
 
 /* ─── Hero ambient glow animation ──────────────────────── */

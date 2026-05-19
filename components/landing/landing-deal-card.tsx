@@ -11,6 +11,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n/provider'
 import type { FeedEventType, LandingFeedItem } from '@/lib/landing/landing-deal-feed'
 
 const EVENT_META: Record<
@@ -51,8 +52,12 @@ type LandingDealCardProps = {
 }
 
 export function LandingDealCard({ item, highlighted, style }: LandingDealCardProps) {
+  const { t } = useI18n()
   const meta = EVENT_META[item.eventType]
   const Icon = meta.icon
+  const eventLabel =
+    item.eventLabel ||
+    t(item.eventLabelKey, item.eventLabelParams)
   const progress =
     item.milestonesTotal > 0
       ? Math.round((item.milestonesCompleted / item.milestonesTotal) * 100)
@@ -71,14 +76,14 @@ export function LandingDealCard({ item, highlighted, style }: LandingDealCardPro
     >
       {!item.isLive && (
         <span className="absolute right-3 top-3 rounded-md bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
-          Example
+          {t('landing.liveDeals.card.example')}
         </span>
       )}
 
       <div className="mb-3 flex items-center gap-2">
         <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold', meta.pill)}>
           <Icon className="h-3 w-3" aria-hidden />
-          {item.eventLabel}
+          {eventLabel}
         </span>
         {highlighted && (
           <span className="relative flex h-2 w-2" aria-hidden>
@@ -102,17 +107,17 @@ export function LandingDealCard({ item, highlighted, style }: LandingDealCardPro
 
       <div className="mb-4 grid grid-cols-3 gap-2 rounded-xl border border-border/60 bg-muted/25 p-2">
         <div>
-          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">Amount</p>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">{t('landing.liveDeals.card.amount')}</p>
           <p className="mt-0.5 text-sm font-bold tabular-nums">{item.amountLabel}</p>
         </div>
         <div className="border-x border-border/50 px-2 text-center">
-          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">APR</p>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">{t('landing.liveDeals.card.apr')}</p>
           <p className="mt-0.5 text-sm font-bold tabular-nums text-brand-mid dark:text-brand-light">
             {item.aprLabel ?? '—'}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">Term</p>
+          <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">{t('landing.liveDeals.card.term')}</p>
           <p className="mt-0.5 text-sm font-bold tabular-nums">{item.termDays}d</p>
         </div>
       </div>
@@ -120,7 +125,7 @@ export function LandingDealCard({ item, highlighted, style }: LandingDealCardPro
       {item.milestonesTotal > 0 && (
         <div className="mb-4">
           <div className="mb-1.5 flex justify-between text-[10px] text-muted-foreground">
-            <span>Milestones</span>
+            <span>{t('landing.liveDeals.card.milestones')}</span>
             <span className="tabular-nums">
               {item.milestonesCompleted}/{item.milestonesTotal}
             </span>
@@ -142,7 +147,7 @@ export function LandingDealCard({ item, highlighted, style }: LandingDealCardPro
             : 'bg-muted/40 text-foreground group-hover:bg-muted',
         )}
       >
-        {item.eventType === 'open' ? 'Fund this deal' : 'View deal'}
+        {item.eventType === 'open' ? t('landing.liveDeals.card.fundDeal') : t('landing.liveDeals.card.viewDeal')}
         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
       </div>
     </Link>

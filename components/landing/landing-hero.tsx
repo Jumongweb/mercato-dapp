@@ -6,17 +6,9 @@ import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { LivePOShowcase } from '@/components/landing/live-po-showcase'
 import { useParallax } from '@/lib/landing/use-scroll-motion'
+import { useI18n } from '@/lib/i18n/provider'
 import { ArrowRight, ArrowUpRight, TrendingUp, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const TICKER = [
-  'PO #MKT-2847 · In production',
-  'Milestone 1 released · Acero del Pacífico',
-  'New deal open · Cotton yarn batch',
-  'Escrow funded · LED panels order',
-  'Delivery confirmed · repayment pending',
-  'Verified supplier · 4.8★ rating',
-]
 
 function FloatingChip({
   className,
@@ -38,10 +30,23 @@ function FloatingChip({
 }
 
 export function LandingHero() {
+  const { t } = useI18n()
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
   const productParallax = useParallax(0.12)
   const isDark = mounted && resolvedTheme === 'dark'
+
+  const ticker = React.useMemo(
+    () => [
+      t('landing.hero.ticker.0'),
+      t('landing.hero.ticker.1'),
+      t('landing.hero.ticker.2'),
+      t('landing.hero.ticker.3'),
+      t('landing.hero.ticker.4'),
+      t('landing.hero.ticker.5'),
+    ],
+    [t],
+  )
 
   React.useEffect(() => setMounted(true), [])
 
@@ -80,7 +85,6 @@ export function LandingHero() {
 
       <div className="container relative z-10 mx-auto px-4 pt-20 md:pt-24 lg:pt-28">
         <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
-
           <div className="relative isolate z-10 text-center lg:text-left">
             <span
               className={cn(
@@ -92,17 +96,19 @@ export function LandingHero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-light opacity-70" />
                 <span className="relative h-2 w-2 rounded-full bg-brand-light" />
               </span>
-              Supply chain finance
+              {t('landing.hero.badge')}
             </span>
 
             <h1 className="hero-stagger-2 font-display mb-6 text-[clamp(2.75rem,6vw,4.25rem)] leading-[0.95] tracking-tight text-foreground">
-              <span className="block">The purchase</span>
-              <span className="block">order</span>
-              <span className="mt-1 block text-brand-mid dark:text-brand-light">is the deal.</span>
+              <span className="block">{t('landing.hero.titleLine1')}</span>
+              <span className="block">{t('landing.hero.titleLine2')}</span>
+              <span className="mt-1 block text-brand-mid dark:text-brand-light">
+                {t('landing.hero.titleAccent')}
+              </span>
             </h1>
 
             <p className="hero-stagger-3 mx-auto mb-10 max-w-md text-lg leading-relaxed text-muted-foreground md:text-xl lg:mx-0">
-              Capital flows with goods. SMEs grow, suppliers get paid, investors earn — all around a live purchase order.
+              {t('landing.hero.description')}
             </p>
 
             <div className="hero-stagger-4 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
@@ -112,7 +118,7 @@ export function LandingHero() {
                 className="h-12 min-w-[200px] rounded-full bg-brand-mid px-8 text-base font-semibold text-white shadow-glow-brand hover:bg-brand-dark"
               >
                 <Link href="/auth/sign-up">
-                  Get started free
+                  {t('landing.hero.primaryCta')}
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
                 </Link>
               </Button>
@@ -123,7 +129,7 @@ export function LandingHero() {
                 className="glass h-12 min-w-[200px] rounded-full border-brand-mid/25 px-8 text-base font-semibold text-brand-mid hover:bg-brand-pale/80 dark:text-brand-light"
               >
                 <Link href="/deals">
-                  Explore deals
+                  {t('landing.hero.secondaryCta')}
                   <ArrowUpRight className="ml-1.5 h-4 w-4" aria-hidden />
                 </Link>
               </Button>
@@ -137,7 +143,7 @@ export function LandingHero() {
                   <TrendingUp className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-foreground">+12.5% APR</p>
+                  <p className="text-xs font-bold text-foreground">{t('landing.hero.chipApr')}</p>
                   <p className="text-[10px] text-muted-foreground">InverCap SA</p>
                 </div>
               </div>
@@ -149,7 +155,7 @@ export function LandingHero() {
                   <ShieldCheck className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-foreground">Verified</p>
+                  <p className="text-xs font-bold text-foreground">{t('landing.hero.chipVerified')}</p>
                   <p className="text-[10px] text-muted-foreground">Acero del Pacífico</p>
                 </div>
               </div>
@@ -170,7 +176,7 @@ export function LandingHero() {
         <div className="glass-strong w-full overflow-hidden border-y border-brand-light/20 shadow-sm dark:border-white/10">
           <div className="overflow-hidden py-3.5 md:py-4">
             <div className="marquee-track flex w-max gap-12 motion-reduce:animate-none" aria-hidden>
-              {[...TICKER, ...TICKER].map((item, i) => (
+              {[...ticker, ...ticker].map((item, i) => (
                 <span
                   key={`${item}-${i}`}
                   className="flex shrink-0 items-center gap-2.5 text-sm font-medium text-muted-foreground"

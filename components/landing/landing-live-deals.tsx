@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { mapDealFromDb, type DealRow } from '@/lib/deals'
 import {
   buildLandingFeed,
+  localizeLandingFeedItem,
   splitIntoColumns,
   type LandingFeedItem,
 } from '@/lib/landing/landing-deal-feed'
@@ -15,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Deal } from '@/lib/types'
 import { ArrowRight, Radio } from 'lucide-react'
+import { useI18n } from '@/lib/i18n/provider'
 
 const COLUMN_SPEEDS = [0.38, 0.52, 0.32] as const
 const COLUMN_OFFSETS = [0, 80, 40] as const
@@ -68,6 +70,7 @@ function WaterfallColumn({
 }
 
 export function LandingLiveDeals() {
+  const { t } = useI18n()
   const { ref: sectionRef, progress } = useScrollProgress<HTMLElement>()
   const { ref: headerRef, visible } = useReveal<HTMLDivElement>(0.15)
   const [deals, setDeals] = React.useState<Deal[]>([])
@@ -95,15 +98,19 @@ export function LandingLiveDeals() {
     })()
   }, [])
 
-  const feed = React.useMemo(() => buildLandingFeed(deals), [deals])
+  const feed = React.useMemo(
+    () => buildLandingFeed(deals).map((item) => localizeLandingFeedItem(item, t)),
+    [deals, t],
+  )
   const columns = React.useMemo(() => splitIntoColumns(feed, 3), [feed])
   const scrollPhase = Math.min(6, Math.floor(progress * 8))
   const hasLive = deals.length > 0
 
   return (
     <section
+      id="live-deals"
       ref={sectionRef}
-      className="relative bg-background pt-4 pb-6 md:pt-8 md:pb-8"
+      className="landing-section-anchor relative bg-background pt-4 pb-6 md:pt-8 md:pb-8"
       aria-labelledby="live-deals-heading"
     >
       <div className="relative min-h-[58vh] md:min-h-[68vh]">
@@ -119,11 +126,13 @@ export function LandingLiveDeals() {
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-brand-light/30 bg-brand-ultra/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-mid dark:border-white/10 dark:bg-white/[0.05] dark:text-brand-light">
                 <Radio className="h-3 w-3 motion-safe:animate-pulse" aria-hidden />
-                {hasLive ? 'Live on Mercato' : 'Platform activity'}
+                {hasLive ? t('landing.liveDeals.badgeLive') : t('landing.liveDeals.badgeActivity')}
               </span>
               {loaded && hasLive && (
                 <span className="text-xs text-muted-foreground">
-                  {deals.length} active deal{deals.length === 1 ? '' : 's'}
+                  {t(deals.length === 1 ? 'landing.liveDeals.activeDealsOne' : 'landing.liveDeals.activeDealsOther', {
+                    count: deals.length,
+                  })}
                 </span>
               )}
             </div>
@@ -134,11 +143,13 @@ export function LandingLiveDeals() {
                   id="live-deals-heading"
                   className="font-display mb-2 text-[clamp(1.75rem,4vw,2.75rem)] font-normal leading-[1.08] tracking-tight text-foreground text-balance"
                 >
-                  See capital moving{' '}
-                  <span className="text-brand-mid dark:text-brand-light">right now.</span>
+                  {t('landing.liveDeals.titlePrefix')}{' '}
+                  <span className="text-brand-mid dark:text-brand-light">
+                    {t('landing.liveDeals.titleAccent')}
+                  </span>
                 </h2>
                 <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-                  Fund open orders, follow milestones, or explore completed deals — all in one feed.
+                  {t('landing.liveDeals.description')}
                 </p>
               </div>
               <Button
@@ -146,7 +157,7 @@ export function LandingLiveDeals() {
                 className="shrink-0 rounded-full bg-brand-mid px-6 font-semibold text-white shadow-glow-brand hover:bg-brand-dark"
               >
                 <Link href="/deals">
-                  Browse marketplace
+                  {t('landing.liveDeals.cta')}
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
                 </Link>
               </Button>

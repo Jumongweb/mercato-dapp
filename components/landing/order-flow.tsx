@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { useReveal } from '@/lib/landing/use-scroll-motion'
+import { useI18n } from '@/lib/i18n/provider'
 import {
   ArrowRight,
   CheckCircle2,
@@ -18,83 +19,77 @@ import {
 
 type StepId = 'order' | 'fund' | 'produce' | 'deliver' | 'complete'
 
-const STEPS: {
-  id: StepId
-  n: string
-  short: string
-  title: string
-  body: string
-  actor: string
-  color: string
-  ring: string
-  icon: React.ElementType
-}[] = [
-  {
-    id: 'order',
-    n: '01',
-    short: 'Create PO',
-    title: 'SME creates the order',
-    body: 'Pick a verified supplier, define shipment & delivery milestones, and publish the purchase order to the marketplace.',
-    actor: 'SME',
-    color: 'bg-brand-dark',
-    ring: 'ring-brand-dark/30',
-    icon: FileText,
-  },
-  {
-    id: 'fund',
-    n: '02',
-    short: 'Fund escrow',
-    title: 'Investor funds it',
-    body: 'USDC locks in milestone escrow on Stellar. Capital stays protected until each release condition is met on-chain.',
-    actor: 'Investor',
-    color: 'bg-brand-mid',
-    ring: 'ring-brand-mid/30',
-    icon: Wallet,
-  },
-  {
-    id: 'produce',
-    n: '03',
-    short: 'Produce',
-    title: 'Supplier produces',
-    body: 'Production begins with payment secured. The first milestone can release when manufacturing or shipment starts.',
-    actor: 'Supplier',
-    color: 'bg-brand-light',
-    ring: 'ring-brand-light/40',
-    icon: Package,
-  },
-  {
-    id: 'deliver',
-    n: '04',
-    short: 'Deliver',
-    title: 'Goods deliver',
-    body: 'Delivery is confirmed with proof. Final milestone releases remaining funds to the supplier automatically.',
-    actor: 'SME confirms',
-    color: 'bg-brand-mid',
-    ring: 'ring-brand-mid/30',
-    icon: Truck,
-  },
-  {
-    id: 'complete',
-    n: '05',
-    short: 'Repay',
-    title: 'Everyone wins',
-    body: 'The SME repays principal plus yield from sales. Investors earn, suppliers were paid, and the cycle can repeat.',
-    actor: 'All parties',
-    color: 'bg-brand-dark',
-    ring: 'ring-brand-dark/30',
-    icon: RefreshCw,
-  },
-]
+function useFlowSteps(t: (key: string, replacements?: Record<string, string | number>) => string) {
+  return [
+    {
+      id: 'order' as const,
+      n: '01',
+      short: t('landing.flow.order.short'),
+      title: t('landing.flow.order.title'),
+      body: t('landing.flow.order.body'),
+      actor: t('landing.flow.order.actor'),
+      color: 'bg-brand-dark',
+      ring: 'ring-brand-dark/30',
+      icon: FileText,
+    },
+    {
+      id: 'fund' as const,
+      n: '02',
+      short: t('landing.flow.fund.short'),
+      title: t('landing.flow.fund.title'),
+      body: t('landing.flow.fund.body'),
+      actor: t('landing.flow.fund.actor'),
+      color: 'bg-brand-mid',
+      ring: 'ring-brand-mid/30',
+      icon: Wallet,
+    },
+    {
+      id: 'produce' as const,
+      n: '03',
+      short: t('landing.flow.produce.short'),
+      title: t('landing.flow.produce.title'),
+      body: t('landing.flow.produce.body'),
+      actor: t('landing.flow.produce.actor'),
+      color: 'bg-brand-light',
+      ring: 'ring-brand-light/40',
+      icon: Package,
+    },
+    {
+      id: 'deliver' as const,
+      n: '04',
+      short: t('landing.flow.deliver.short'),
+      title: t('landing.flow.deliver.title'),
+      body: t('landing.flow.deliver.body'),
+      actor: t('landing.flow.deliver.actor'),
+      color: 'bg-brand-mid',
+      ring: 'ring-brand-mid/30',
+      icon: Truck,
+    },
+    {
+      id: 'complete' as const,
+      n: '05',
+      short: t('landing.flow.complete.short'),
+      title: t('landing.flow.complete.title'),
+      body: t('landing.flow.complete.body'),
+      actor: t('landing.flow.complete.actor'),
+      color: 'bg-brand-dark',
+      ring: 'ring-brand-dark/30',
+      icon: RefreshCw,
+    },
+  ]
+}
 
-function StepVisual({ stepId }: { stepId: StepId }) {
+function StepVisual({ stepId, t }: { stepId: StepId; t: (key: string) => string }) {
   switch (stepId) {
     case 'order':
       return (
         <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-md">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-brand-mid">Purchase order</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-brand-mid">
+              {t('landing.flow.visual.purchaseOrder')}
+            </p>
             <span className="rounded-md bg-brand-pale px-2 py-0.5 text-[10px] font-semibold text-brand-mid dark:bg-white/[0.06] dark:text-brand-light">
-              Draft → Live
+              {t('landing.flow.visual.draftLive')}
             </span>
           </div>
           <div className="mb-3 flex items-center gap-2 rounded-xl border border-brand-pale bg-brand-ultra/80 p-2.5 dark:border-white/10 dark:bg-white/[0.04]">
@@ -102,12 +97,12 @@ function StepVisual({ stepId }: { stepId: StepId }) {
             <div className="min-w-0">
               <p className="truncate text-xs font-semibold">Acero del Pacífico</p>
               <p className="flex items-center gap-0.5 text-[9px] text-muted-foreground">
-                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" /> Verified
+                <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" /> {t('landing.flow.visual.verified')}
               </p>
             </div>
           </div>
           <div className="space-y-1.5">
-            {['On production · 50%', 'On delivery · 50%'].map((m) => (
+            {[t('landing.flow.visual.milestone1'), t('landing.flow.visual.milestone2')].map((m) => (
               <div key={m} className="flex items-center gap-2 rounded-lg bg-muted/40 px-2.5 py-1.5 text-[10px] text-muted-foreground">
                 <CheckCircle2 className="h-3 w-3 text-brand-mid" aria-hidden />
                 {m}
@@ -189,18 +184,20 @@ function StepVisual({ stepId }: { stepId: StepId }) {
 }
 
 export function OrderFlow() {
+  const { t } = useI18n()
   const { ref, visible } = useReveal(0.12)
   const [active, setActive] = React.useState(0)
   const [panelKey, setPanelKey] = React.useState(0)
+  const steps = React.useMemo(() => useFlowSteps(t), [t])
 
-  const step = STEPS[active]
+  const step = steps[active]
   const StepIcon = step.icon
 
   React.useEffect(() => {
     if (!visible) return
     const id = setInterval(() => {
       setActive((a) => {
-        const next = (a + 1) % STEPS.length
+        const next = (a + 1) % steps.length
         setPanelKey((k) => k + 1)
         return next
       })
@@ -225,12 +222,12 @@ export function OrderFlow() {
           >
             <div
               className="h-full rounded-full bg-gradient-to-r from-brand-dark via-brand-mid to-brand-light transition-[width] duration-700 ease-out"
-              style={{ width: visible ? `${((active + 1) / STEPS.length) * 100}%` : '0%' }}
+              style={{ width: visible ? `${((active + 1) / steps.length) * 100}%` : '0%' }}
             />
           </div>
 
           <div className="relative flex justify-between">
-            {STEPS.map((s, i) => {
+            {steps.map((s, i) => {
               const Icon = s.icon
               const isActive = active === i
               const isPast = i < active
@@ -283,7 +280,7 @@ export function OrderFlow() {
               aria-hidden
             />
             <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-mid">
-              Step {step.n}
+              {t('landing.flow.stepLabel', { n: step.n })}
             </p>
             <h3 className="font-display mb-3 text-2xl leading-tight text-foreground md:text-[1.75rem]">
               {step.title}
@@ -297,7 +294,7 @@ export function OrderFlow() {
             </span>
 
             <div className="mt-8 flex items-center gap-2">
-              {STEPS.map((_, i) => (
+              {steps.map((_, i) => (
                 <button
                   key={i}
                   type="button"
@@ -306,7 +303,7 @@ export function OrderFlow() {
                     'h-1.5 rounded-full transition-all duration-300',
                     i === active ? 'w-8 bg-brand-mid' : 'w-2 bg-brand-pale hover:bg-brand-light/60 dark:bg-white/10',
                   )}
-                  aria-label={`Go to step ${i + 1}`}
+                  aria-label={t('landing.flow.stepAria', { n: i + 1 })}
                 />
               ))}
             </div>
@@ -314,10 +311,10 @@ export function OrderFlow() {
 
           <div className="flex items-center justify-center bg-muted/20 p-8 dark:bg-muted/5 lg:p-10">
             <div className="w-full max-w-sm">
-              <StepVisual stepId={step.id} />
+              <StepVisual stepId={step.id} t={t} />
               <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[10px] text-muted-foreground">
                 <Lock className="h-3 w-3" aria-hidden />
-                Illustrative step · milestone escrow on Stellar
+                {t('landing.flow.footnote')}
               </p>
             </div>
           </div>
@@ -327,7 +324,7 @@ export function OrderFlow() {
       {/* Mobile */}
       <div className="md:hidden">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {STEPS.map((s, i) => {
+          {steps.map((s, i) => {
             const Icon = s.icon
             return (
               <button
@@ -353,10 +350,12 @@ export function OrderFlow() {
           className="tab-panel-enter overflow-hidden rounded-2xl border border-brand-light/30 bg-card shadow-elevated"
         >
           <div className="border-b border-border bg-brand-ultra/50 p-5 dark:bg-white/[0.04]">
-            <StepVisual stepId={step.id} />
+            <StepVisual stepId={step.id} t={t} />
           </div>
           <div className="p-5">
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-brand-mid">Step {step.n}</p>
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-brand-mid">
+              {t('landing.flow.stepLabel', { n: step.n })}
+            </p>
             <h3 className="font-display mb-2 text-xl text-foreground">{step.title}</h3>
             <p className="text-sm leading-relaxed text-muted-foreground">{step.body}</p>
             <p className="mt-4 flex items-center gap-1.5 text-xs font-medium text-brand-mid dark:text-brand-light">

@@ -26,7 +26,12 @@
   },
   "nav": {
     "main": "Principal",
+    "marketing": "Página principal",
     "openMenu": "Abrir menú",
+    "whyMercato": "Por qué Mercato",
+    "roles": "Quién participa",
+    "liveDeals": "Actividad en vivo",
+    "faq": "Preguntas frecuentes",
     "deals": "Órdenes",
     "suppliers": "Proveedores",
     "smbs": "PyMEs",

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useReveal } from '@/lib/landing/use-scroll-motion'
+import { useI18n } from '@/lib/i18n/provider'
 import {
   ArrowRight,
   CheckCircle2,
@@ -92,11 +93,12 @@ const ROLES: {
 ]
 
 function SmeMockup() {
+  const { t } = useI18n()
   return (
     <div className="rounded-2xl border border-border/70 bg-card shadow-elevated">
       <div className="border-b border-border bg-brand-ultra/80 px-4 py-3 dark:bg-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-mid">New purchase order</p>
-        <p className="text-sm font-bold text-foreground">Supplier & milestones</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-mid">{t('landing.roles.sme.mockupTitle')}</p>
+        <p className="text-sm font-bold text-foreground">{t('landing.roles.sme.mockupSubtitle')}</p>
       </div>
       <div className="space-y-3 p-4">
         <div className="flex items-center gap-3 rounded-xl border border-brand-pale bg-brand-ultra/50 p-3 dark:border-white/10 dark:bg-white/[0.04]">
@@ -104,26 +106,27 @@ function SmeMockup() {
           <div>
             <p className="text-sm font-semibold">Acero del Pacífico</p>
             <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> 4.8 · 156 orders
+              <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> 4.8 · {t('landing.roles.smeMockupOrders')}
             </p>
           </div>
         </div>
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3">
-          <p className="text-[10px] text-muted-foreground">Order value</p>
+          <p className="text-[10px] text-muted-foreground">{t('landing.showcase.metricOrderValue')}</p>
           <p className="text-2xl font-bold tabular-nums">$48,500 <span className="text-sm font-medium text-muted-foreground">USDC</span></p>
         </div>
-        <div className="rounded-xl bg-brand-dark py-2.5 text-center text-sm font-bold text-white">Open for investors →</div>
+        <div className="rounded-xl bg-brand-dark py-2.5 text-center text-sm font-bold text-white">{t('landing.roles.smeMockupOpenCta')}</div>
       </div>
     </div>
   )
 }
 
 function InvestorMockup() {
+  const { t } = useI18n()
   return (
     <div className="rounded-2xl border border-border/70 bg-card shadow-elevated">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <p className="text-sm font-bold">Open deals</p>
-        <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">12.3% avg</span>
+        <p className="text-sm font-bold">{t('landing.roles.investorMockupTitle')}</p>
+        <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">{t('landing.roles.investorMockupAvg')}</span>
       </div>
       <div className="space-y-2 p-3">
         {[
@@ -148,27 +151,28 @@ function InvestorMockup() {
 }
 
 function SupplierMockup() {
+  const { t } = useI18n()
   return (
     <div className="rounded-2xl border border-border/70 bg-card shadow-elevated">
       <div className="flex items-center gap-3 border-b border-border px-4 py-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-600 text-xs font-bold text-white">AP</div>
         <div>
           <p className="text-sm font-bold">Acero del Pacífico</p>
-          <p className="text-[10px] text-muted-foreground">Verified · Top 3%</p>
+          <p className="text-[10px] text-muted-foreground">{t('landing.roles.supplier.mockupVerified')}</p>
         </div>
       </div>
       <div className="space-y-2 p-3">
         <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/80 p-3 dark:border-emerald-900/40 dark:bg-emerald-950/30">
           <div className="flex justify-between text-xs font-semibold">
-            <span>Production start</span>
+            <span>{t('landing.roles.supplier.mockupProduction')}</span>
             <span className="text-emerald-700 dark:text-emerald-400">✓ $24,250</span>
           </div>
-          <p className="mt-1 text-lg font-bold tabular-nums text-emerald-800 dark:text-emerald-300">Paid</p>
+          <p className="mt-1 text-lg font-bold tabular-nums text-emerald-800 dark:text-emerald-300">{t('landing.roles.supplier.mockupPaid')}</p>
         </div>
         <div className="rounded-xl border border-border bg-muted/30 p-3">
           <div className="flex justify-between text-xs font-semibold text-muted-foreground">
-            <span>Delivery confirmed</span>
-            <span>Pending</span>
+            <span>{t('landing.roles.supplier.mockupDelivery')}</span>
+            <span>{t('landing.roles.supplier.mockupPending')}</span>
           </div>
           <p className="mt-1 text-lg font-bold tabular-nums text-muted-foreground">$24,250</p>
         </div>
@@ -184,11 +188,30 @@ const MOCKUPS: Record<RoleId, React.ReactNode> = {
 }
 
 export function LandingRoles() {
+  const { t } = useI18n()
   const { ref, visible } = useReveal<HTMLElement>(0.1)
   const [active, setActive] = React.useState<RoleId>('sme')
   const [panelKey, setPanelKey] = React.useState(0)
 
-  const role = ROLES.find((r) => r.id === active)!
+  const roles = React.useMemo(
+    () =>
+      ROLES.map((r) => ({
+        ...r,
+        label: t(`landing.roles.${r.id}.label`),
+        headline: t(`landing.roles.${r.id}.headline`),
+        subhead: t(`landing.roles.${r.id}.subhead`),
+        body: t(`landing.roles.${r.id}.body`),
+        bullets: [
+          t(`landing.roles.${r.id}.bullet1`),
+          t(`landing.roles.${r.id}.bullet2`),
+          t(`landing.roles.${r.id}.bullet3`),
+        ],
+        cta: { ...r.cta, label: t(`landing.roles.${r.id}.cta`) },
+      })),
+    [t],
+  )
+
+  const role = roles.find((r) => r.id === active)!
   const Icon = role.icon
 
   const selectRole = (id: RoleId) => {
@@ -198,7 +221,11 @@ export function LandingRoles() {
   }
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-background py-24 md:py-32">
+    <section
+      id="roles"
+      ref={ref}
+      className="landing-section-anchor relative overflow-hidden bg-background py-24 md:py-32"
+    >
       <div className="container relative mx-auto px-4">
         <div className="mx-auto max-w-6xl">
           <div
@@ -209,12 +236,12 @@ export function LandingRoles() {
             )}
           >
             <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-mid">
-              Who it&apos;s for
+              {t('landing.roles.eyebrow')}
             </p>
             <h2 className="font-display max-w-2xl text-[clamp(2rem,5vw,3.25rem)] font-normal leading-[1.05] tracking-tight text-foreground text-balance">
-              One platform.
+              {t('landing.roles.titleLine1')}
               <br />
-              <span className="text-muted-foreground">Three ways to grow.</span>
+              <span className="text-muted-foreground">{t('landing.roles.titleLine2')}</span>
             </h2>
           </div>
 
@@ -226,7 +253,7 @@ export function LandingRoles() {
           >
             {/* Mobile role picker */}
             <div className="flex gap-2 overflow-x-auto border-b border-border bg-muted/20 p-3 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {ROLES.map((r) => {
+              {roles.map((r) => {
                 const RIcon = r.icon
                 const isActive = r.id === active
                 return (
@@ -252,9 +279,9 @@ export function LandingRoles() {
               {/* Desktop rail */}
               <nav
                 className="hidden flex-col border-r border-border bg-muted/15 lg:flex"
-                aria-label="Choose your role"
+                aria-label={t('landing.roles.chooseRoleAria')}
               >
-                {ROLES.map((r) => {
+                {roles.map((r) => {
                   const RIcon = r.icon
                   const isActive = r.id === active
                   return (
@@ -331,7 +358,7 @@ export function LandingRoles() {
                       )}
                     >
                       <Icon className="h-4 w-4" aria-hidden />
-                      For {role.label}
+                      {t('landing.roles.forRole', { role: role.label })}
                     </p>
                     <h3 className="font-display mb-4 text-3xl font-normal leading-[1.08] tracking-tight text-foreground md:text-4xl">
                       {role.headline}
@@ -365,7 +392,7 @@ export function LandingRoles() {
                     </Button>
                     <p className="mt-5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                       <Lock className="h-3 w-3" aria-hidden />
-                      Milestone escrow on Stellar
+                      {t('landing.roles.escrowNote')}
                     </p>
                   </div>
                 </div>
@@ -379,7 +406,7 @@ export function LandingRoles() {
               visible ? 'opacity-100' : 'opacity-0',
             )}
           >
-            One purchase order links all three — pick your role and enter the flow.
+            {t('landing.roles.footerLine')}
           </p>
         </div>
       </div>

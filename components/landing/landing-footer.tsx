@@ -1,41 +1,45 @@
+'use client'
+
 import Link from 'next/link'
 import { MercatoLogo } from '@/components/mercato-logo'
+import { useI18n } from '@/lib/i18n/provider'
 import { ArrowUpRight } from 'lucide-react'
 
-const FOOTER_LINKS = {
-  Platform: [
-    { label: 'Browse deals', href: '/deals' },
-    { label: 'How it works', href: '/how-it-works' },
-    { label: 'Suppliers', href: '/suppliers' },
-    { label: 'Investors', href: '/investors' },
-  ],
-  'Get started': [
-    { label: 'Create account', href: '/auth/sign-up' },
-    { label: 'Sign in', href: '/auth/login' },
-    { label: 'Create a deal', href: '/create-deal' },
-  ],
-} as const
-
 export function LandingFooter() {
+  const { t } = useI18n()
+
+  const footerLinks = {
+    [t('landing.footer.platformTitle')]: [
+      { label: t('landing.footer.browseDeals'), href: '/deals' },
+      { label: t('landing.footer.howItWorks'), href: '/how-it-works' },
+      { label: t('nav.suppliers'), href: '/suppliers' },
+      { label: t('nav.investors'), href: '/investors' },
+    ],
+    [t('landing.footer.getStartedTitle')]: [
+      { label: t('landing.footer.createAccount'), href: '/auth/sign-up' },
+      { label: t('landing.footer.signIn'), href: '/auth/login' },
+      { label: t('landing.footer.createDeal'), href: '/create-deal' },
+    ],
+  }
+
   return (
     <footer className="border-t border-border/60 bg-gradient-to-b from-brand-ultra/40 to-background dark:from-background">
       <div className="container mx-auto px-4 py-12 md:py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr] md:gap-12">
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2.5">
-              <MercatoLogo className="h-6 dark:invert" />
+              <MercatoLogo className="h-6" />
               <span className="font-display text-xl tracking-tight text-foreground">MERCATO</span>
             </Link>
             <p className="mb-5 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Supply chain finance for Latin America — purchase orders, milestone escrow, and
-              real-economy returns on Stellar.
+              {t('landing.footer.tagline')}
             </p>
             <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-brand-mid/80">
-              Built on Stellar
+              {t('landing.footer.builtOn')}
             </p>
           </div>
 
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
+          {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
               <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
                 {title}
@@ -61,9 +65,7 @@ export function LandingFooter() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-8 text-center sm:flex-row sm:text-left">
-          <p className="text-sm text-muted-foreground">
-            © 2026 MERCATO. Supply Chain Finance for Latin America.
-          </p>
+          <p className="text-sm text-muted-foreground">{t('landing.footer.copyright')}</p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <a
               href="https://stellar.org"
