@@ -1,22 +1,57 @@
 {
   "hero": {
-    "badge": "Supply chain finance",
-    "titleLine1": "The purchase",
-    "titleLine2": "order",
-    "titleAccent": "is the deal.",
-    "description": "Capital flows with goods. SMEs grow, suppliers get paid, investors earn — all around a live purchase order.",
-    "primaryCta": "Get started free",
-    "secondaryCta": "Explore deals",
-    "chipApr": "+12.5% APR",
-    "chipVerified": "Verified",
-    "ticker": [
-      "PO #MKT-2847 · In production",
-      "Milestone 1 released · Acero del Pacífico",
-      "New deal open · Cotton yarn batch",
-      "Escrow funded · LED panels order",
-      "Delivery confirmed · repayment pending",
-      "Verified supplier · 4.8★ rating"
-    ]
+    "badge": "We fund real production",
+    "titleLine1": "Capital to produce.",
+    "titleLine2": "Growth for everyone.",
+    "description": "We connect SMEs, suppliers, and investors to finance real orders with secure, transparent payments at every stage.",
+    "primaryCta": "Explore opportunities",
+    "secondaryCta": "Fund an order",
+    "trust1": "Milestone-protected payments",
+    "trust2": "Transparent at every stage",
+    "trust3": "No personal guarantees",
+    "liveDeal": {
+      "centerTagline": "We mediate so agreements are honored.",
+      "order": {
+        "label": "Funded order",
+        "name": "Textiles Rivera",
+        "amount": "$5,000 USDC",
+        "status": "In production"
+      },
+      "sme": {
+        "label": "Verified & referred SME",
+        "name": "Textiles Rivera",
+        "rating": "4.8",
+        "location": "Monterrey, Mexico"
+      },
+      "supplier": {
+        "label": "Verified supplier",
+        "name": "Acero del Pacífico",
+        "rating": "4.9",
+        "location": "Guadalajara, Mexico"
+      },
+      "investors": {
+        "label": "Investors",
+        "extra": "+24",
+        "committed": "Committed capital",
+        "amount": "$2,350 USDC"
+      }
+    },
+    "comparison": {
+      "title": "Every growing business hits the same wall.",
+      "colProvider": "Provider",
+      "colRate": "APR rate",
+      "colAccess": "Access / Requirements",
+      "bank": "Bank (SME)",
+      "fintech": "Fintech factoring",
+      "informal": "Informal lenders"
+    },
+    "stats": {
+      "orders": { "label": "Orders funded", "value": "1,248", "delta": "+24% this month" },
+      "smes": { "label": "Active SMEs", "value": "127", "delta": "+18% this month" },
+      "suppliers": { "label": "Verified suppliers", "value": "243", "delta": "Across 5 countries" },
+      "capital": { "label": "Capital mobilized", "value": "$3.2M", "delta": "+31% this month" },
+      "fulfillment": { "label": "Fulfillment rate", "value": "96.7%", "delta": "Historical average" }
+    }
   },
   "roles": {
     "eyebrow": "Who it's for",
@@ -142,31 +177,36 @@
       "short": "Create PO",
       "title": "SME creates the order",
       "body": "Pick a verified supplier, define shipment & delivery milestones, and publish the purchase order to the marketplace.",
-      "actor": "SME"
+      "actor": "SME",
+      "badge": "Verified & referred SME"
     },
     "fund": {
       "short": "Fund escrow",
       "title": "Investor funds it",
       "body": "USDC locks in milestone escrow on Stellar. Capital stays protected until each release condition is met on-chain.",
-      "actor": "Investor"
+      "actor": "Investor",
+      "badge": "Capital committed in escrow"
     },
     "produce": {
       "short": "Produce",
       "title": "Supplier produces",
       "body": "Production begins with payment secured. The first milestone can release when manufacturing or shipment starts.",
-      "actor": "Supplier"
+      "actor": "Supplier",
+      "badge": "Verified supplier in production"
     },
     "deliver": {
       "short": "Deliver",
       "title": "Goods deliver",
       "body": "Delivery is confirmed with proof. Final milestone releases remaining funds to the supplier automatically.",
-      "actor": "SME confirms"
+      "actor": "SME confirms",
+      "badge": "Delivery confirmed with proof"
     },
     "complete": {
       "short": "Repay",
       "title": "Everyone wins",
       "body": "The SME repays principal plus yield from sales. Investors earn, suppliers were paid, and the cycle can repeat.",
-      "actor": "All parties"
+      "actor": "All parties",
+      "badge": "Repaid · deal closed"
     },
     "visual": {
       "purchaseOrder": "Purchase order",
@@ -178,8 +218,7 @@
   },
   "page": {
     "howItWorksEyebrow": "How it works",
-    "howItWorksTitleLine1": "From order to delivery,",
-    "howItWorksTitleLine2": "five clear steps.",
+    "howItWorksTitle": "A simple process, built for businesses ready to grow.",
     "partnersEyebrow": "Built with the Stellar ecosystem"
   },
   "cta": {

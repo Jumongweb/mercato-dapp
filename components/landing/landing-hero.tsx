@@ -1,123 +1,72 @@
 'use client'
 
-import * as React from 'react'
 import Link from 'next/link'
-import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
-import { LivePOShowcase } from '@/components/landing/live-po-showcase'
-import { useParallax } from '@/lib/landing/use-scroll-motion'
+import { HeroComparisonCard } from '@/components/landing/hero-comparison-card'
+import { HeroLiveDeal } from '@/components/landing/hero-live-deal'
+import { HeroHowItWorksSteps } from '@/components/landing/hero-how-it-works-steps'
+import { HeroStatsBar } from '@/components/landing/hero-stats-bar'
+import { LandingPartnersStrip } from '@/components/landing/landing-page-intro'
 import { useI18n } from '@/lib/i18n/provider'
-import { ArrowRight, ArrowUpRight, TrendingUp, ShieldCheck } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { ArrowRight, BadgeCheck, Eye, ShieldCheck } from 'lucide-react'
 
-function FloatingChip({
-  className,
-  children,
-  delay,
-}: {
-  className?: string
-  children: React.ReactNode
-  delay?: string
-}) {
-  return (
-    <div
-      className={cn('glass-strong float-a rounded-2xl px-4 py-3 shadow-elevated', className)}
-      style={{ animationDelay: delay }}
-    >
-      {children}
-    </div>
-  )
-}
+const TRUST_ITEMS = [
+  { key: 'trust1', icon: ShieldCheck },
+  { key: 'trust2', icon: Eye },
+] as const
 
 export function LandingHero() {
   const { t } = useI18n()
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-  const productParallax = useParallax(0.12)
-  const isDark = mounted && resolvedTheme === 'dark'
-
-  const ticker = React.useMemo(
-    () => [
-      t('landing.hero.ticker.0'),
-      t('landing.hero.ticker.1'),
-      t('landing.hero.ticker.2'),
-      t('landing.hero.ticker.3'),
-      t('landing.hero.ticker.4'),
-      t('landing.hero.ticker.5'),
-    ],
-    [t],
-  )
-
-  React.useEffect(() => setMounted(true), [])
 
   return (
-    <section className="relative min-h-[92vh] overflow-hidden bg-landing-hero pb-8 md:min-h-[88vh]">
+    <section className="hero-ref relative overflow-hidden bg-landing-hero text-foreground dark:bg-[hsl(210_20%_4%)] dark:text-white">
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-        <div
-          className={cn(
-            'hero-glow absolute h-[520px] w-[520px] rounded-full blur-[120px]',
-            isDark
-              ? '-left-[22rem] -top-40 md:-left-[26rem]'
-              : '-left-32 -top-32 md:-left-40',
-            isDark
-              ? 'bg-[radial-gradient(circle,rgba(63,160,104,0.1)_0%,transparent_68%)]'
-              : 'bg-[radial-gradient(circle,rgba(63,160,104,0.28)_0%,transparent_70%)]',
-          )}
-        />
-        <div
-          className={cn(
-            'hero-glow-b absolute -right-24 top-1/4 h-[480px] w-[480px] rounded-full blur-[100px]',
-            isDark
-              ? 'bg-[radial-gradient(circle,rgba(255,255,255,0.04)_0%,transparent_65%)]'
-              : 'bg-[radial-gradient(circle,rgba(38,112,70,0.15)_0%,transparent_70%)]',
-          )}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]"
-          style={{
-            backgroundImage: isDark
-              ? 'radial-gradient(hsl(0 0% 100% / 0.05) 1px, transparent 1px)'
-              : 'radial-gradient(hsl(var(--brand-mid) / 0.12) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        />
+        <div className="hero-ref-photo-right absolute inset-y-0 right-0 w-[92%] sm:w-[88%] lg:w-[82%] xl:w-[75%]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero-bg.png"
+            alt=""
+            className="hero-ref-photo-img"
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
+        <div className="hero-ref-photo-fade absolute inset-0" />
+        <div className="hero-glow absolute -left-32 top-0 h-[28rem] w-[28rem] rounded-full opacity-25 blur-[100px] dark:opacity-15" />
+        <div className="hero-glow-b absolute -right-20 bottom-1/4 h-[22rem] w-[22rem] rounded-full opacity-20 blur-[90px] dark:opacity-10" />
+        <div className="hero-grain absolute inset-0 opacity-[0.08] dark:opacity-[0.14]" />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 pt-20 md:pt-24 lg:pt-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
-          <div className="relative isolate z-10 text-center lg:text-left">
-            <span
-              className={cn(
-                'hero-stagger-1 mb-8 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em]',
-                'glass text-brand-mid dark:text-brand-light',
-              )}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-light opacity-70" />
-                <span className="relative h-2 w-2 rounded-full bg-brand-light" />
+      <div className="container relative z-10 mx-auto px-4 pb-6 pt-24 md:pb-8 md:pt-28">
+        <div className="mx-auto grid max-w-[90rem] items-center gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-8 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)_auto] xl:gap-6">
+          <div className="relative z-10 lg:max-w-lg xl:max-w-none">
+            <div className="hero-stagger-1 mb-5 flex items-center gap-2">
+              <BadgeCheck className="h-4 w-4 text-brand-mid dark:text-brand-light" aria-hidden />
+              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-mid dark:text-brand-light">
+                {t('landing.hero.badge')}
               </span>
-              {t('landing.hero.badge')}
-            </span>
+            </div>
 
-            <h1 className="hero-stagger-2 font-display mb-6 text-[clamp(2.75rem,6vw,4.25rem)] leading-[0.95] tracking-tight text-foreground">
-              <span className="block">{t('landing.hero.titleLine1')}</span>
-              <span className="block">{t('landing.hero.titleLine2')}</span>
+            <h1 className="hero-stagger-2 font-display text-[clamp(2.5rem,5.8vw,4rem)] font-normal leading-[0.95] tracking-tight">
+              <span className="block text-foreground dark:text-white">
+                {t('landing.hero.titleLine1')}
+              </span>
               <span className="mt-1 block text-brand-mid dark:text-brand-light">
-                {t('landing.hero.titleAccent')}
+                {t('landing.hero.titleLine2')}
               </span>
             </h1>
 
-            <p className="hero-stagger-3 mx-auto mb-10 max-w-md text-lg leading-relaxed text-muted-foreground md:text-xl lg:mx-0">
+            <p className="hero-stagger-3 mt-6 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg dark:text-white/70">
               {t('landing.hero.description')}
             </p>
 
-            <div className="hero-stagger-4 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+            <div className="hero-stagger-4 mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Button
                 size="lg"
                 asChild
-                className="h-12 min-w-[200px] rounded-full bg-brand-mid px-8 text-base font-semibold text-white shadow-glow-brand hover:bg-brand-dark"
+                className="h-12 rounded-lg bg-brand-mid px-7 text-sm font-bold text-white shadow-[0_8px_32px_-6px_hsl(var(--brand-mid)/0.45)] hover:bg-brand-dark dark:bg-brand-light dark:text-[hsl(150_20%_6%)] dark:shadow-[0_8px_32px_-6px_hsl(var(--brand-light)/0.55)] dark:hover:bg-brand-mid dark:hover:text-white"
               >
-                <Link href="/auth/sign-up">
+                <Link href="/deals">
                   {t('landing.hero.primaryCta')}
                   <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
                 </Link>
@@ -126,74 +75,56 @@ export function LandingHero() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="glass h-12 min-w-[200px] rounded-full border-brand-mid/25 px-8 text-base font-semibold text-brand-mid hover:bg-brand-pale/80 dark:text-brand-light"
+                className="h-12 rounded-lg border-brand-mid/30 bg-white/60 px-7 text-sm font-semibold text-brand-dark hover:bg-brand-pale/80 dark:border-white/25 dark:bg-transparent dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
               >
-                <Link href="/deals">
-                  {t('landing.hero.secondaryCta')}
-                  <ArrowUpRight className="ml-1.5 h-4 w-4" aria-hidden />
-                </Link>
+                <Link href="/auth/sign-up">{t('landing.hero.secondaryCta')}</Link>
               </Button>
             </div>
+
+            <ul className="hero-stagger-4 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-6">
+              {TRUST_ITEMS.map(({ key, icon: Icon }) => (
+                <li
+                  key={key}
+                  className="flex items-center gap-2 text-[12px] text-muted-foreground dark:text-white/55"
+                >
+                  <Icon
+                    className="h-3.5 w-3.5 shrink-0 text-brand-mid dark:text-brand-light/80"
+                    aria-hidden
+                  />
+                  {t(`landing.hero.${key}`)}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-            <FloatingChip className="absolute -left-2 top-8 z-20 hidden lg:block float-b" delay="-1s">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-pale text-brand-mid dark:bg-white/10">
-                  <TrendingUp className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-foreground">{t('landing.hero.chipApr')}</p>
-                  <p className="text-[10px] text-muted-foreground">InverCap SA</p>
-                </div>
-              </div>
-            </FloatingChip>
-
-            <FloatingChip className="absolute -right-2 bottom-16 z-20 hidden lg:block float-c" delay="-3s">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-pale text-brand-mid dark:bg-white/10">
-                  <ShieldCheck className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-foreground">{t('landing.hero.chipVerified')}</p>
-                  <p className="text-[10px] text-muted-foreground">Acero del Pacífico</p>
-                </div>
-              </div>
-            </FloatingChip>
-
-            <div ref={productParallax.ref} style={productParallax.style} className="hero-stagger-4 relative">
-              <div className="border-shine rounded-3xl shadow-glow-brand">
-                <div className="rounded-3xl p-1">
-                  <LivePOShowcase />
-                </div>
-              </div>
-            </div>
+          <div className="hero-stagger-4 relative z-10 flex justify-center lg:justify-end xl:col-span-1">
+            <HeroLiveDeal />
           </div>
+
+          <div className="hero-stagger-4 relative z-20 hidden shrink-0 xl:block">
+            <HeroComparisonCard className="sticky top-28" />
+          </div>
+        </div>
+
+        <div className="hero-stagger-4 relative z-10 mx-auto mt-8 flex justify-center xl:hidden">
+          <HeroComparisonCard />
         </div>
       </div>
 
-      <div className="relative z-10 mt-16 w-full md:mt-20">
-        <div className="glass-strong w-full overflow-hidden border-y border-brand-light/20 shadow-sm dark:border-white/10">
-          <div className="overflow-hidden py-3.5 md:py-4">
-            <div className="marquee-track flex w-max gap-12 motion-reduce:animate-none" aria-hidden>
-              {[...ticker, ...ticker].map((item, i) => (
-                <span
-                  key={`${item}-${i}`}
-                  className="flex shrink-0 items-center gap-2.5 text-sm font-medium text-muted-foreground"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-light shadow-[0_0_8px_hsl(var(--brand-light))]" />
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="relative z-10">
+        <HeroStatsBar />
       </div>
 
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent"
-        aria-hidden
-      />
+        id="how-it-works"
+        className="landing-section-anchor relative z-10 w-full bg-background pb-8 pt-2 md:pb-10 md:pt-3 dark:bg-[hsl(0_0%_4%)]"
+      >
+        <HeroHowItWorksSteps />
+      </div>
+
+      <div className="relative z-10 border-t border-border/50 bg-background dark:border-white/[0.06] dark:bg-[hsl(0_0%_3%)]">
+        <LandingPartnersStrip variant="hero" />
+      </div>
     </section>
   )
 }

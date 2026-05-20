@@ -1,22 +1,57 @@
 {
   "hero": {
-    "badge": "Financiamiento de cadena de suministro",
-    "titleLine1": "La orden de",
-    "titleLine2": "compra",
-    "titleAccent": "es el negocio.",
-    "description": "El capital fluye con la mercancía. Las PyMEs crecen, los proveedores cobran y los inversionistas ganan — todo alrededor de una orden de compra en vivo.",
-    "primaryCta": "Comenzar gratis",
-    "secondaryCta": "Explorar órdenes",
-    "chipApr": "+12.5% APR",
-    "chipVerified": "Verificado",
-    "ticker": [
-      "OC #MKT-2847 · En producción",
-      "Hito 1 liberado · Acero del Pacífico",
-      "Nueva orden abierta · Lote de hilo de algodón",
-      "Escrow financiado · Pedido de paneles LED",
-      "Entrega confirmada · repago pendiente",
-      "Proveedor verificado · 4.8★"
-    ]
+    "badge": "Financiamos producción real",
+    "titleLine1": "Capital para producir.",
+    "titleLine2": "Crecimiento para todos.",
+    "description": "Conectamos PYMEs, proveedores e inversores para financiar órdenes reales con pagos seguros y transparentes en cada etapa.",
+    "primaryCta": "Explorar oportunidades",
+    "secondaryCta": "Financiar una orden",
+    "trust1": "Pagos protegidos por hitos",
+    "trust2": "Transparente en cada etapa",
+    "trust3": "Sin garantías personales",
+    "liveDeal": {
+      "centerTagline": "Mediamos para que los acuerdos se cumplan.",
+      "order": {
+        "label": "Orden financiada",
+        "name": "Textiles Rivera",
+        "amount": "$5,000 USDC",
+        "status": "En producción"
+      },
+      "sme": {
+        "label": "PyME verificada y referida",
+        "name": "Textiles Rivera",
+        "rating": "4.8",
+        "location": "Monterrey, México"
+      },
+      "supplier": {
+        "label": "Proveedor verificado",
+        "name": "Acero del Pacífico",
+        "rating": "4.9",
+        "location": "Guadalajara, México"
+      },
+      "investors": {
+        "label": "Inversores",
+        "extra": "+24",
+        "committed": "Capital comprometido",
+        "amount": "$2,350 USDC"
+      }
+    },
+    "comparison": {
+      "title": "Todo negocio en crecimiento choca con el mismo muro.",
+      "colProvider": "Proveedor",
+      "colRate": "Tasa APR",
+      "colAccess": "Acceso / Requisitos",
+      "bank": "Banco (PyME)",
+      "fintech": "Factoring fintech",
+      "informal": "Prestamistas informales"
+    },
+    "stats": {
+      "orders": { "label": "Órdenes financiadas", "value": "1,248", "delta": "+24% este mes" },
+      "smes": { "label": "PYMEs activas", "value": "127", "delta": "+18% este mes" },
+      "suppliers": { "label": "Proveedores verificados", "value": "243", "delta": "En 5 países" },
+      "capital": { "label": "Capital movilizado", "value": "$3.2M", "delta": "+31% este mes" },
+      "fulfillment": { "label": "Tasa de cumplimiento", "value": "96.7%", "delta": "Promedio histórico" }
+    }
   },
   "roles": {
     "eyebrow": "Quién participa",
@@ -142,31 +177,36 @@
       "short": "Crear OC",
       "title": "La PyME crea la orden",
       "body": "Elige un proveedor verificado, define hitos de envío y entrega, y publica la orden de compra en el marketplace.",
-      "actor": "PyME"
+      "actor": "PyME",
+      "badge": "PyME verificada y referida"
     },
     "fund": {
       "short": "Financiar escrow",
       "title": "El inversionista financia",
       "body": "El USDC se bloquea en escrow por hitos en Stellar. El capital queda protegido hasta cumplir cada condición de liberación on-chain.",
-      "actor": "Inversionista"
+      "actor": "Inversionista",
+      "badge": "Capital comprometido en escrow"
     },
     "produce": {
       "short": "Producir",
       "title": "El proveedor produce",
       "body": "La producción comienza con el pago asegurado. El primer hito puede liberarse al iniciar fabricación o envío.",
-      "actor": "Proveedor"
+      "actor": "Proveedor",
+      "badge": "Proveedor verificado en producción"
     },
     "deliver": {
       "short": "Entregar",
       "title": "La mercancía llega",
       "body": "La entrega se confirma con prueba. El hito final libera los fondos restantes al proveedor automáticamente.",
-      "actor": "PyME confirma"
+      "actor": "PyME confirma",
+      "badge": "Entrega confirmada con prueba"
     },
     "complete": {
       "short": "Repagar",
       "title": "Todos ganan",
       "body": "La PyME repaga principal más rendimiento con las ventas. Los inversionistas ganan, los proveedores cobraron y el ciclo puede repetirse.",
-      "actor": "Todas las partes"
+      "actor": "Todas las partes",
+      "badge": "Repago y negocio cerrado"
     },
     "visual": {
       "purchaseOrder": "Orden de compra",
@@ -178,8 +218,7 @@
   },
   "page": {
     "howItWorksEyebrow": "Cómo funciona",
-    "howItWorksTitleLine1": "Del pedido a la entrega,",
-    "howItWorksTitleLine2": "cinco pasos claros.",
+    "howItWorksTitle": "Un proceso simple, pensado para negocios que quieren crecer.",
     "partnersEyebrow": "Construido con el ecosistema Stellar"
   },
   "cta": {

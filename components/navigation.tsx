@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -18,6 +19,9 @@ import { NotificationDropdown } from '@/components/notifications/notification-dr
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { useI18n } from '@/lib/i18n/provider'
 
+const NAV_HEIGHT_PX = 64
+const SCROLL_FADE_DISTANCE = 80
+
 export function Navigation() {
   const router = useRouter()
   const { t } = useI18n()
@@ -26,6 +30,18 @@ export function Navigation() {
   const [profile, setProfile] = useState<NavProfile | null>(null)
   const [authReady, setAuthReady] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrollFade, setScrollFade] = useState(0)
+
+  const updateScrollFade = useCallback(() => {
+    const fade = Math.min(1, window.scrollY / SCROLL_FADE_DISTANCE)
+    setScrollFade(fade)
+  }, [])
+
+  useEffect(() => {
+    updateScrollFade()
+    window.addEventListener('scroll', updateScrollFade, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrollFade)
+  }, [updateScrollFade])
   const {
     walletInfo,
     isConnected,
@@ -105,7 +121,24 @@ export function Navigation() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur transition-[box-shadow,background-color] duration-200 ease-out supports-[backdrop-filter]:bg-background/60">
+    <>
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-50 w-full',
+          'transition-[box-shadow,border-color] duration-300 ease-out motion-reduce:transition-none',
+          scrollFade > 0.02 && 'border-b',
+        )}
+        style={{
+          backgroundColor: `hsl(var(--background) / ${scrollFade * 0.62})`,
+          borderColor:
+            scrollFade > 0.02 ? `hsl(var(--border) / ${scrollFade * 0.45})` : 'transparent',
+          boxShadow:
+            scrollFade > 0.25
+              ? `0 1px 3px hsl(var(--foreground) / ${scrollFade * 0.04})`
+              : 'none',
+          backdropFilter: scrollFade > 0.08 ? `blur(${Math.round(12 * scrollFade)}px)` : 'none',
+        }}
+      >
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         <div className="flex min-w-0 items-center gap-4 lg:gap-8">
           <Link
@@ -186,5 +219,7 @@ export function Navigation() {
         </div>
       </div>
     </header>
+      <div className="shrink-0" style={{ height: NAV_HEIGHT_PX }} aria-hidden />
+    </>
   )
 }

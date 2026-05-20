@@ -382,6 +382,288 @@
   .section-overlap { margin-top: -5.5rem; border-radius: 2.5rem 2.5rem 0 0; }
 }
 
+/* ─── Reference hero (light + dark) ───────────────────────── */
+.hero-ref-photo-right {
+  position: absolute;
+  overflow: hidden;
+  background-color: hsl(var(--brand-ultra) / 0.5);
+}
+
+.dark .hero-ref-photo-right {
+  background-color: hsl(210 18% 6% / 0.6);
+}
+
+.hero-ref-photo-img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.hero-ref-photo-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    hsl(var(--landing-hero) / 0.88) 0%,
+    hsl(var(--brand-ultra) / 0.35) 28%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.hero-ref-photo-fade {
+  background: linear-gradient(
+    to right,
+    hsl(var(--landing-hero)) 0%,
+    hsl(var(--landing-hero)) 18%,
+    hsl(var(--brand-ultra) / 0.97) 28%,
+    hsl(var(--brand-pale) / 0.65) 40%,
+    hsl(var(--brand-pale) / 0.15) 52%,
+    transparent 66%
+  );
+}
+
+.dark .hero-ref-photo-right::after {
+  background: linear-gradient(
+    to right,
+    hsl(210 20% 4% / 0.9) 0%,
+    hsl(210 18% 5% / 0.55) 24%,
+    transparent 50%
+  );
+}
+
+.dark .hero-ref-photo-fade {
+  background: linear-gradient(
+    to right,
+    hsl(210 20% 4%) 0%,
+    hsl(210 20% 4%) 16%,
+    hsl(210 22% 5% / 0.98) 26%,
+    hsl(210 18% 5% / 0.8) 38%,
+    hsl(210 18% 5% / 0.32) 52%,
+    transparent 68%
+  );
+}
+
+.hero-ref .hero-glow {
+  background: radial-gradient(circle, hsl(var(--brand-light) / 0.22) 0%, transparent 68%);
+}
+
+.dark .hero-ref .hero-glow {
+  background: radial-gradient(circle, hsl(var(--brand-light) / 0.35) 0%, transparent 68%);
+}
+
+.hero-ref .hero-glow-b {
+  background: radial-gradient(circle, hsl(var(--brand-mid) / 0.12) 0%, transparent 65%);
+}
+
+.dark .hero-ref .hero-glow-b {
+  background: radial-gradient(circle, hsl(0 0% 100% / 0.06) 0%, transparent 65%);
+}
+
+.hero-ref .hero-grain {
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+}
+
+.dark .hero-ref .hero-grain {
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+}
+
+@keyframes hero-deal-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.hero-deal-card {
+  animation: hero-deal-float 5s ease-in-out infinite;
+}
+
+.hero-deal-card:nth-child(3) { animation-delay: -1.2s; }
+.hero-deal-card:nth-child(4) { animation-delay: -2.4s; }
+.hero-deal-card:nth-child(5) { animation-delay: -3.6s; }
+.hero-deal-card:nth-child(6) { animation-delay: -0.8s; }
+
+@keyframes hero-deal-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-deal-ring {
+  transform-origin: center;
+  animation: hero-deal-ring-spin 90s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-deal-card,
+  .hero-deal-ring {
+    animation: none;
+  }
+}
+
+/* ─── Hero grain ──────────────────────────────────────────── */
+.hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* ─── Hero pain cascade (elevated) ────────────────────────── */
+@keyframes hero-cascade-beat-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-cascade-beat {
+  animation: hero-cascade-beat-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-cascade-spine-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.hero-cascade-spine {
+  animation: hero-cascade-spine-grow 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+.hero-cascade-vignette {
+  background: radial-gradient(
+    ellipse 100% 85% at 50% 55%,
+    transparent 35%,
+    hsl(var(--brand-dark) / 0.04) 100%
+  );
+}
+
+.dark .hero-cascade-vignette {
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 50%,
+    transparent 30%,
+    hsl(0 0% 0% / 0.35) 100%
+  );
+}
+
+@keyframes hero-bank-quote-pulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.hero-bank-quote {
+  animation: hero-bank-quote-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes hero-rupture-glow {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 40px hsl(38 92% 50% / 0.25);
+  }
+}
+
+.hero-rupture-text {
+  animation: hero-rupture-glow 3s ease-in-out infinite;
+}
+
+@keyframes hero-cascade-cut-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.hero-cascade-cut {
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(38 80% 45% / 0.5) 20%,
+    hsl(38 80% 45% / 0.5) 80%,
+    transparent
+  );
+  animation: hero-cascade-cut-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-cascade-break-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-cascade-break {
+  animation: hero-cascade-break-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-break-glow-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.65;
+    transform: translateX(8%);
+  }
+}
+
+.hero-break-glow {
+  animation: hero-break-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes hero-break-sweep {
+  from {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  to {
+    transform: translateX(280%) skewX(-12deg);
+  }
+}
+
+.hero-break-sweep {
+  animation: hero-break-sweep 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cascade-beat,
+  .hero-cascade-spine,
+  .hero-bank-quote,
+  .hero-rupture-text,
+  .hero-cascade-cut,
+  .hero-cascade-break,
+  .hero-break-glow,
+  .hero-break-sweep {
+    animation: none;
+    filter: none;
+  }
+}
+
 /* ─── Hero entrance ───────────────────────────────────────── */
 @keyframes mercato-hero-in {
   from { opacity: 0; transform: translateY(24px); }

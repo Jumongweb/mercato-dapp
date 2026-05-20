@@ -1,16 +1,8 @@
-import type React from "react"
+import type React from 'react'
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { DM_Serif_Display } from 'next/font/google'
-
-const dmSerifDisplay = DM_Serif_Display({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-display',
-  display: 'swap',
-})
 import '@pollar/react/styles.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { TrustlessWorkProvider } from '@/lib/trustless/config'
@@ -21,8 +13,15 @@ import { I18nProvider } from '@/lib/i18n/provider'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { getServerLocale } from '@/lib/i18n/server'
 import { UserTypeGate } from '@/components/user-type-gate'
-
 import './globals.css'
+
+const dmSerifDisplay = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'MERCATO - Supply Chain Finance Platform',
