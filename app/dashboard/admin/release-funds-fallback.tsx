@@ -10,7 +10,7 @@ import { useWallet } from '@/hooks/use-wallet'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Wallet, DollarSign, ExternalLink } from 'lucide-react'
+import { Wallet, DollarSign, ExternalLink, User } from 'lucide-react'
 import type { ReleaseFallbackItem } from '@/lib/admin/types'
 import { useI18n } from '@/lib/i18n/provider'
 
@@ -215,6 +215,14 @@ export function ReleaseFundsFallback({ items, escrowsByContractId: escrowsFromPa
             <p className="mt-1 text-sm text-muted-foreground">
               {item.milestoneTitle} — ${item.milestoneAmount.toLocaleString(numLocale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ({item.milestonePercentage}%)
             </p>
+            {item.supplierLogoUrl && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border/50 bg-background shadow-sm">
+                  <img src={item.supplierLogoUrl} alt="Supplier logo" className="h-full w-full object-cover" />
+                </div>
+                <span>Supplier logo</span>
+              </div>
+            )}
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
             {!isConnected ? (

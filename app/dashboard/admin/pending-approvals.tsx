@@ -233,7 +233,13 @@ export function PendingApprovals({ items, escrowsByContractId: escrowsFromParent
                   <span className="truncate">{item.pymeName}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground" title="Supplier">
-                  <User className="h-4 w-4 shrink-0" aria-hidden />
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border/50 bg-muted/30">
+                    {item.supplierLogoUrl ? (
+                      <img src={item.supplierLogoUrl} alt={item.supplierName} className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-3 w-3" aria-hidden />
+                    )}
+                  </div>
                   <span className="truncate">{item.supplierName}</span>
                 </div>
                 <div className="text-muted-foreground">

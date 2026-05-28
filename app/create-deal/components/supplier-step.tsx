@@ -20,6 +20,7 @@ interface SupplierOption {
   company_name: string
   email?: string
   address?: string
+  logo_url?: string | null
 }
 
 interface SupplierStepProps {
@@ -66,6 +67,7 @@ export function SupplierStep({
   const isCustomFundingWindow =
     formData.fundingWindowDays !== '' &&
     !PRESET_FUNDING_WINDOWS.includes(formData.fundingWindowDays)
+  const selectedSupplier = filteredSuppliers.find(s => s.id === formData.supplierId)
 
   return (
     <Card>
@@ -102,7 +104,16 @@ export function SupplierStep({
               ) : (
                 filteredSuppliers.map((supplier) => (
                   <SelectItem key={supplier.id} value={supplier.id}>
-                    {supplier.company_name}
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded border border-border/50 bg-muted/30">
+                        {supplier.logo_url ? (
+                          <img src={supplier.logo_url} alt={supplier.company_name} className="h-full w-full object-cover" />
+                        ) : (
+                          <Building2 className="h-3 w-3 text-muted-foreground/60" />
+                        )}
+                      </div>
+                      {supplier.company_name}
+                    </div>
                   </SelectItem>
                 ))
               )}
@@ -118,15 +129,24 @@ export function SupplierStep({
 
         {formData.supplierName && (
           <div className="rounded-lg border border-border bg-muted/30 p-3">
-            <p className="mb-1 text-sm font-medium">{t('createDeal.selectedSupplier')}</p>
-            <p className="text-sm text-muted-foreground">
-              {formData.supplierName}
-            </p>
-            {formData.supplierContact && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t('createDeal.contact', { contact: formData.supplierContact })}
-              </p>
-            )}
+            <p className="mb-2 text-sm font-medium">{t('createDeal.selectedSupplier')}</p>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/50 bg-background shadow-sm">
+                {selectedSupplier?.logo_url ? (
+                  <img src={selectedSupplier.logo_url} alt={formData.supplierName} className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-5 w-5 text-muted-foreground/40" />
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{formData.supplierName}</p>
+                {formData.supplierContact && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('createDeal.contact', { contact: formData.supplierContact })}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

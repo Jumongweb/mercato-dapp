@@ -70,7 +70,7 @@ export default async function SupplierDetailPage({
   const { data: company, error: companyError } = await supabase
     .from('supplier_companies')
     .select(
-      'id, owner_id, company_name, bio, full_name, contact_name, phone, address, categories, products, verified, country, sector'
+      'id, owner_id, company_name, bio, full_name, contact_name, phone, address, categories, products, verified, country, sector, logo_url'
     )
     .eq('id', id)
     .single()
@@ -121,8 +121,16 @@ export default async function SupplierDetailPage({
         <div className="mb-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-                <Building2 className="h-7 w-7 text-primary" aria-hidden />
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border/50 bg-primary/5">
+                {company.logo_url ? (
+                  <img
+                    src={company.logo_url}
+                    alt={displayName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Building2 className="h-8 w-8 text-primary" aria-hidden />
+                )}
               </div>
               <div>
                 <div className="mb-1 flex flex-wrap items-center gap-2">

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Package } from 'lucide-react'
+import { Package, Building2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/format'
 import { getCategoryLabel } from '@/lib/categories'
 import type { CreateDealFormData } from '../types'
@@ -22,6 +22,7 @@ interface SupplierOption {
   company_name: string
   email?: string
   address?: string
+  logo_url?: string | null
 }
 
 interface ProductOption {
@@ -124,7 +125,16 @@ export function DealBasicsStep({
               ) : (
                 filteredSuppliers.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
-                    {s.company_name}
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded border border-border/50 bg-muted/30">
+                        {s.logo_url ? (
+                          <img src={s.logo_url} alt={s.company_name} className="h-full w-full object-cover" />
+                        ) : (
+                          <Building2 className="h-3 w-3 text-muted-foreground/60" />
+                        )}
+                      </div>
+                      {s.company_name}
+                    </div>
                   </SelectItem>
                 ))
               )}

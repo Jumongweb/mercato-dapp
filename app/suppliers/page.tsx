@@ -40,6 +40,7 @@ type Supplier = {
   verified: boolean
   country: string | null
   sector: string | null
+  logo_url: string | null
 }
 
 const SUPPLIER_CATEGORY_VALUES = [
@@ -73,7 +74,7 @@ export default function SuppliersPage() {
       try {
         const { data: companies, error } = await supabase
           .from('supplier_companies')
-          .select('id, company_name, bio, address, phone, verified, country, sector, owner_id')
+          .select('id, company_name, bio, address, phone, verified, country, sector, owner_id, logo_url')
           .order('company_name')
 
         if (error) throw error
@@ -123,6 +124,7 @@ export default function SuppliersPage() {
               country: c.country ?? null,
               sector: c.sector ?? null,
               email: emailByOwner[c.owner_id] ?? '',
+              logo_url: c.logo_url ?? null,
             }
           }) as Supplier[]
         )
@@ -391,8 +393,16 @@ export default function SuppliersPage() {
                 {/* Card header */}
                 <div className="flex-1 p-5">
                   <div className="mb-3 flex items-start justify-between gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                      <Building2 className="h-5 w-5 text-primary" aria-hidden />
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-primary/5 group-hover:bg-primary/10">
+                      {supplier.logo_url ? (
+                        <img
+                          src={supplier.logo_url}
+                          alt={supplier.company_name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Building2 className="h-6 w-6 text-primary" aria-hidden />
+                      )}
                     </div>
                     <div className="flex flex-wrap items-center justify-end gap-1.5">
                       {supplier.verified && (
