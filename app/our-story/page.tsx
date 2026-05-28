@@ -1,5 +1,5 @@
 import Script from 'next/script'
-import Link from 'next/link'
+
 import { LandingCta } from '@/components/landing/landing-cta'
 
 export async function generateMetadata() {
