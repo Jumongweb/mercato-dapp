@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Building2, Camera, Loader2, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n/provider'
@@ -17,7 +17,16 @@ export function SupplierLogoUpload({ value, onChange, companyId }: SupplierLogoU
   const { t } = useI18n()
   const supabase = createClient()
   const [isUploading, setIsUploading] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) setUserId(user.id)
+    }
+    getUserId()
+  }, [supabase])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -25,37 +34,41 @@ export function SupplierLogoUpload({ value, onChange, companyId }: SupplierLogoU
 
     // Validate file type
     if (!['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(file.type)) {
-      toast.error('Invalid file type. Please upload a PNG, JPG or WEBP image.')
+      toast.error(t('supplierProfile.logoInvalidFileType'))
       return
     }
 
-    // Validate file size (1MB)
-    if (file.size > 1024 * 1024) {
-      toast.error('File too large. Max 1MB allowed.')
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error(t('supplierProfile.logoTooLarge'))
+      return
+    }
+
+    if (!userId) {
+      toast.error(t('supplierProfile.logoUploadError'))
       return
     }
 
     setIsUploading(true)
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${companyId}-${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `logos/${fileName}`
+      const fileExt = file.name.split('.').pop() || 'png'
+      const filePath = `${userId}/${companyId}/logo.${fileExt}`
 
       const { error: uploadError } = await supabase.storage
-        .from('supplier-logos')
-        .upload(filePath, file)
+        .from('company-logos')
+        .upload(filePath, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
       const { data: { publicUrl } } = supabase.storage
-        .from('supplier-logos')
+        .from('company-logos')
         .getPublicUrl(filePath)
 
       onChange(publicUrl)
-      toast.success('Logo uploaded successfully')
+      toast.success(t('supplierProfile.logoUploaded'))
     } catch (error) {
       console.error('Error uploading logo:', error)
-      toast.error('Failed to upload logo. Make sure the "supplier-logos" bucket exists.')
+      toast.error(t('supplierProfile.logoUploadError'))
     } finally {
       setIsUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -64,6 +77,7 @@ export function SupplierLogoUpload({ value, onChange, companyId }: SupplierLogoU
 
   const handleRemove = () => {
     onChange(null)
+    toast.success(t('supplierProfile.logoRemoved'))
   }
 
   return (
@@ -73,7 +87,7 @@ export function SupplierLogoUpload({ value, onChange, companyId }: SupplierLogoU
           {value ? (
             <img
               src={value}
-              alt="Company logo"
+              alt={t('supplierProfile.logoCurrentAlt')}
               className="h-full w-full object-cover"
             />
           ) : (

@@ -10,7 +10,7 @@ import { useWallet } from '@/hooks/use-wallet'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Wallet, DollarSign, ExternalLink, User } from 'lucide-react'
+import { Wallet, DollarSign, ExternalLink } from 'lucide-react'
 import type { ReleaseFallbackItem } from '@/lib/admin/types'
 import { useI18n } from '@/lib/i18n/provider'
 
@@ -218,9 +218,9 @@ export function ReleaseFundsFallback({ items, escrowsByContractId: escrowsFromPa
             {item.supplierLogoUrl && (
               <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                 <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border/50 bg-background shadow-sm">
-                  <img src={item.supplierLogoUrl} alt="Supplier logo" className="h-full w-full object-cover" />
+                  <img src={item.supplierLogoUrl} alt={t('adminPending.supplierLogoAlt')} className="h-full w-full object-cover" />
                 </div>
-                <span>Supplier logo</span>
+                <span>{t('adminPending.supplierLogoLabel')}</span>
               </div>
             )}
           </div>
