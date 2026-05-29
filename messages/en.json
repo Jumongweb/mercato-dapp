@@ -528,5 +528,23 @@
       "logistics": "Logistics",
       "other": "Other"
     }
+  },
+  "ourStory": {
+  "meta": {
+    "title": "Our Story | Mercato Supply Chain Finance",
+    "description": "Discover why Mercato was built: closing the supply chain financing gap for SMEs in Latin America."
+  },
+  "hero": {
+    "heading": "Our Story",
+    "sub": "Why we built Mercato, who it serves, and how it works."
+  },
+  "sections": {
+    "what": "What is Mercato?",
+    "why": "Why was Mercato created?",
+    "who": "Who does Mercato serve?",
+    "how": "How does Mercato work?",
+    "blockchain": "Why blockchain escrow?",
+    "join": "Join Mercato"
   }
+}
 }
