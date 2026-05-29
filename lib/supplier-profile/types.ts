@@ -5,6 +5,7 @@ export type SupplierCompany = {
   country: string | null
   sector: string | null
   phone: string | null
+  logo_url: string | null
 }
 
 export type SupplierProduct = {
@@ -46,6 +47,7 @@ export type CompanyFormState = {
   country: string
   sector: string
   phone: string
+  logo_url: string
 }
 
 export const PAGE_SIZE = 20

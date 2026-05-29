@@ -32,6 +32,7 @@ export function useSupplierProfile() {
     country: '',
     sector: '',
     phone: '',
+    logo_url: '',
   })
 
   const [activeTab, setActiveTab] = useState<'profile' | 'catalog'>('catalog')
@@ -95,7 +96,7 @@ export function useSupplierProfile() {
 
       const { data: companiesData } = await supabase
         .from('supplier_companies')
-        .select('id, company_name, bio, country, sector, phone')
+        .select('id, company_name, bio, country, sector, phone, logo_url')
         .eq('owner_id', u.id)
         .order('company_name')
 
@@ -127,6 +128,7 @@ export function useSupplierProfile() {
       country: company?.country ?? '',
       sector: company?.sector ?? '',
       phone: company?.phone ?? '',
+      logo_url: company?.logo_url ?? '',
     })
   }, [selectedCompanyId, user, companies, supabase])
 
@@ -197,6 +199,7 @@ export function useSupplierProfile() {
           country: companyForm.country || null,
           sector: companyForm.sector || null,
           phone: companyForm.phone.trim() || null,
+          logo_url: companyForm.logo_url || null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', selectedCompanyId)
@@ -211,6 +214,7 @@ export function useSupplierProfile() {
                 country: companyForm.country || null,
                 sector: companyForm.sector || null,
                 phone: companyForm.phone.trim() || null,
+                logo_url: companyForm.logo_url || null,
               }
             : c,
         ),
@@ -241,7 +245,7 @@ export function useSupplierProfile() {
         phone: payload.phone.trim() || null,
         updated_at: new Date().toISOString(),
       })
-      .select('id, company_name, bio, country, sector, phone')
+      .select('id, company_name, bio, country, sector, phone, logo_url')
       .single()
     if (error) throw error
     const company = data as SupplierCompany
