@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Navigation } from '@/components/navigation'
+import { JsonLd } from '@/components/seo/json-ld'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,31 +24,7 @@ import {
 } from 'lucide-react'
 import { getCountryLabel, getSectorLabel } from '@/lib/constants'
 import { getServerDictionary, getServerLocale, tr, formatMoneyServer } from '@/lib/i18n/server'
-
-function SupplierLogo({
-  logoUrl,
-  companyName
-}: {
-  logoUrl: string | null
-  companyName: string
-}) {
-  'use client'
-  const [imageError, setImageError] = useState(false)
-  return (
-    <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-border/50 bg-primary/5">
-      {logoUrl && !imageError ? (
-        <img
-          src={logoUrl}
-          alt={companyName}
-          className="h-full w-full object-cover"
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <Building2 className="h-8 w-8 text-primary" aria-hidden />
-      )}
-    </div>
-  )
-}
+import { SupplierLogo } from '@/components/suppliers/supplier-logo'
 
 type ProductRow = {
   id: string
@@ -81,6 +57,47 @@ function dealStatusLabel(m: Awaited<ReturnType<typeof getServerDictionary>>, sta
   const label = tr(m, `deals.${status}`)
   if (label === `deals.${status}`) return status
   return label
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  const supabase = await createClient()
+
+  const { data: company } = await supabase
+    .from('supplier_companies')
+    .select('company_name, bio, full_name, contact_name')
+    .eq('id', id)
+    .single()
+
+  if (!company) {
+    return {
+      title: 'Supplier Not Found | Mercato',
+    }
+  }
+
+  const displayName = company.company_name || company.full_name || company.contact_name || 'Supplier'
+  const desc = company.bio || `Supplier profile for ${displayName} on Mercato.`
+
+  return {
+    title: `${displayName} | Mercato Suppliers`,
+    description: desc,
+    openGraph: {
+      title: `${displayName} | Mercato`,
+      description: desc,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `/suppliers/${id}`,
+      languages: {
+        en: `/suppliers/${id}?lang=en`,
+        es: `/suppliers/${id}?lang=es`,
+      },
+    },
+  }
 }
 
 export default async function SupplierDetailPage({
@@ -129,9 +146,53 @@ export default async function SupplierDetailPage({
 
   const formatPrice = (value: number) => formatMoneyServer(locale, value)
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://mercato.app',
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Suppliers',
+        'item': 'https://mercato.app/suppliers',
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': displayName,
+        'item': `https://mercato.app/suppliers/${id}`,
+      },
+    ],
+  }
+
+  const productSchemas = productList.map((p) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    'name': p.name,
+    'description': p.description || `Product offered by ${displayName}`,
+    'category': p.category,
+    'offers': {
+      '@type': 'Offer',
+      'price': p.price_per_unit,
+      'priceCurrency': 'USDC',
+      'availability': 'https://schema.org/InStock',
+    },
+  }))
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navigation />
+    <>
+      <JsonLd data={breadcrumbSchema} />
+      {productSchemas.map((schema, index) => (
+        <JsonLd key={index} data={schema} />
+      ))}
+      <div className="flex min-h-screen flex-col">
+        <Navigation />
       <div className="container mx-auto px-4 py-10">
         {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -384,5 +445,6 @@ export default async function SupplierDetailPage({
         </div>
       </div>
     </div>
+    </>
   )
 }
